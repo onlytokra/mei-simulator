@@ -431,7 +431,7 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
     </div>
   </div>
 
-  <div class="stats-grid">
+  <div class="stats-grid" style="grid-template-columns:1fr 1fr;">
     <div class="stat"><div class="stat-label">Total ganho</div><div class="stat-val" id="stat-total">R$0</div></div>
     <div class="stat"><div class="stat-label">Cliques</div><div class="stat-val" id="stat-cliques">0</div></div>
     
@@ -2927,12 +2927,27 @@ const TITULOS_LOJA = [
 ];
 
 const TEMAS_LOJA = [
-  {id:'dark',nome:'Padrão Dark',desc:'Tema escuro clássico',custo:0,cor1:'#111',cor2:'#1a1a1a',verde:'#1D9E75'},
-  {id:'neon',nome:'Neon Cyberpunk',desc:'Roxo e verde neon vibrante',custo:100000,cor1:'#0a0015',cor2:'#12002a',verde:'#00ff88'},
-  {id:'luxo',nome:'Ouro e Preto',desc:'Elegância de magnata',custo:500000,cor1:'#0a0800',cor2:'#1a1500',verde:'#cc9900'},
-  {id:'favela',nome:'Verde Esperança',desc:'As cores da comunidade',custo:50000,cor1:'#0a1a0a',cor2:'#0f2010',verde:'#44cc44'},
-  {id:'brasil',nome:'Verde Amarelo',desc:'Orgulho nacional',custo:200000,cor1:'#002200',cor2:'#003300',verde:'#ffdd00'},
-  {id:'light',nome:'Modo Claro',desc:'Para os olhos descansarem',custo:0,cor1:'#f5f5f5',cor2:'#ffffff',verde:'#1D9E75'},
+  // GRÁTIS
+  {id:'dark',      nome:'Dark Clássico',    desc:'Tema escuro padrão',               custo:0,      nivel:0, cor1:'#111',    cor2:'#1a1a1a', verde:'#1D9E75'},
+  {id:'light',     nome:'Modo Claro',       desc:'Para os olhos descansarem',         custo:0,      nivel:0, cor1:'#f5f5f5', cor2:'#ffffff', verde:'#1D9E75'},
+
+  // POR NÍVEL
+  {id:'favela',    nome:'Verde Esperança',  desc:'As cores da comunidade',            custo:0,      nivel:2, cor1:'#0a1a0a', cor2:'#0f2010', verde:'#44cc44'},
+  {id:'oceano',    nome:'Fundo do Mar',     desc:'Azul profundo relaxante',           custo:0,      nivel:3, cor1:'#000d1a', cor2:'#001529', verde:'#00aaff'},
+  {id:'roxo',      nome:'Galáxia Roxa',     desc:'Misterioso e elegante',             custo:0,      nivel:4, cor1:'#0d0015', cor2:'#1a0030', verde:'#bb44ff'},
+  {id:'vermelho',  nome:'Sangue e Fogo',    desc:'Intenso e agressivo',               custo:0,      nivel:5, cor1:'#150000', cor2:'#250000', verde:'#ff3333'},
+  {id:'rosa',      nome:'Pink Vibes',       desc:'Moderno e estiloso',                custo:0,      nivel:6, cor1:'#150010', cor2:'#25001a', verde:'#ff44aa'},
+  {id:'sertao',    nome:'Sertão Nordestino',desc:'Cores quentes do nordeste',         custo:0,      nivel:7, cor1:'#1a0e00', cor2:'#2a1800', verde:'#ff8800'},
+
+  // COMPRÁVEIS
+  {id:'neon',      nome:'Neon Cyberpunk',   desc:'Verde neon vibrante',               custo:100000,  nivel:0, cor1:'#0a0015', cor2:'#12002a', verde:'#00ff88'},
+  {id:'brasil',    nome:'Verde Amarelo',    desc:'Orgulho nacional',                  custo:200000,  nivel:0, cor1:'#002200', cor2:'#003300', verde:'#ffdd00'},
+  {id:'luxo',      nome:'Ouro e Preto',     desc:'Elegância de magnata',              custo:500000,  nivel:0, cor1:'#0a0800', cor2:'#1a1500', verde:'#cc9900'},
+  {id:'matrix',    nome:'Matrix',           desc:'Código verde no escuro',            custo:800000,  nivel:0, cor1:'#000800', cor2:'#001200', verde:'#00ff00'},
+  {id:'ciberpunk', nome:'Ciberpunk Laranja',desc:'Futuro distópico neon',             custo:1000000, nivel:0, cor1:'#0f0500', cor2:'#1a0800', verde:'#ff6600'},
+  {id:'gelo',      nome:'Gelo Ártico',      desc:'Frio e cristalino',                 custo:1500000, nivel:0, cor1:'#000d1a', cor2:'#001a2e', verde:'#88ddff'},
+  {id:'ouro_rosa', nome:'Ouro Rosé',        desc:'Luxo e sofisticação',               custo:2000000, nivel:0, cor1:'#150a0a', cor2:'#221010', verde:'#ffaa88'},
+  {id:'diamante',  nome:'Diamante Negro',   desc:'O tema mais exclusivo',             custo:5000000, nivel:0, cor1:'#050508', cor2:'#0a0a12', verde:'#aaaaff'},
 ];
 
 const MONOPOLIOS_DISPONIVEIS = [
@@ -3342,19 +3357,32 @@ function renderLoja() {
 
     <!-- TEMAS -->
     <div style="font-size:12px;font-weight:500;color:var(--text);margin:1rem 0 0.5rem">🎨 Temas Visuais</div>
+    <div style="display:flex;gap:10px;font-size:11px;color:var(--text3);margin-bottom:0.5rem">
+      <span style="color:var(--green)">🎁 Grátis</span>
+      <span style="color:var(--blue)">⭐ Por Nível</span>
+      <span style="color:var(--gold)">💰 Compra</span>
+    </div>
     ${TEMAS_LOJA.map(t => {
-      const pode = G.dinheiro >= t.custo || t.custo === 0;
       const ativo = G.tema === t.id;
-      return `
-        <div class="card card-row" style="margin-bottom:0.4rem;${ativo?'border-color:var(--green)':''}">
-          <div style="width:32px;height:32px;border-radius:8px;background:${t.cor1};border:2px solid ${t.verde};flex-shrink:0"></div>
-          <div class="card-info">
-            <div class="card-nome">${t.nome}${ativo?' ✅':''}</div>
-            <div class="card-desc">${t.desc}</div>
+      const comprado = (G.temasComprados||[]).includes(t.id);
+      const nivelOk = G.xpNivel >= t.nivel;
+      const podeComprar = G.dinheiro >= t.custo;
+      const tipo = t.custo > 0 ? 'compra' : t.nivel > 0 ? 'nivel' : 'free';
+      const corTipo = tipo==='compra'?'var(--gold)':tipo==='nivel'?'var(--blue)':'var(--green)';
+      const bloqueado = (tipo==='nivel' && !nivelOk) || (tipo==='compra' && !comprado && !podeComprar);
+      let labelBtn = ativo ? 'Ativo' : tipo==='free' ? 'Grátis' : comprado ? 'Equipar' : tipo==='nivel' ? (nivelOk ? 'Equipar' : 'Nv.'+t.nivel) : fmt(t.custo);
+      return \`
+        <div class="card card-row" style="margin-bottom:0.4rem;\${ativo?'border-color:var(--green)':''}\${bloqueado?'opacity:0.5':''}">
+          <div style="width:32px;height:32px;border-radius:8px;background:\${t.cor1};border:2px solid \${t.verde};flex-shrink:0;position:relative">
+            <div style="position:absolute;bottom:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:\${corTipo}"></div>
           </div>
-          <button class="btn-small" style="color:${ativo?'var(--green)':pode?'var(--text)':'var(--text3)'};border-color:${ativo?'var(--green)':pode?'var(--border2)':'var(--text3)'}" onclick="aplicarTema('${t.id}')">${ativo?'Ativo':t.custo===0?'Grátis':fmt(t.custo)}</button>
+          <div class="card-info">
+            <div class="card-nome">\${t.nome}\${ativo?' ✅':''}</div>
+            <div class="card-desc">\${t.desc}\${tipo==='nivel'&&!nivelOk?' · 🔒 Nível '+t.nivel+' necessário':''}</div>
+          </div>
+          <button class="btn-small" style="color:\${ativo?'var(--green)':bloqueado?'var(--text3)':corTipo};border-color:\${ativo?'var(--green)':bloqueado?'var(--text3)':corTipo}" onclick="aplicarTema('\${t.id}')">\${labelBtn}</button>
         </div>
-      `;
+      \`;
     }).join('')}
   `;
 }
@@ -3394,14 +3422,17 @@ function equiparTitulo(id) {
 function aplicarTema(id) {
   const t = TEMAS_LOJA.find(x=>x.id===id);
   if (!t) return;
-  if (t.custo > 0 && G.dinheiro < t.custo) {
-    if (!G.temasComprados) G.temasComprados = [];
-    if (!G.temasComprados.includes(id)) { mostrarNotif('Dinheiro insuficiente!'); return; }
-  }
   if (!G.temasComprados) G.temasComprados = [];
+  // Checar bloqueio por nível
+  if (t.nivel > 0 && G.xpNivel < t.nivel) {
+    mostrarNotif('🔒 Requer nível '+t.nivel+'!'); return;
+  }
+  // Checar compra
   if (t.custo > 0 && !G.temasComprados.includes(id)) {
+    if (G.dinheiro < t.custo) { mostrarNotif('Dinheiro insuficiente!'); return; }
     G.dinheiro -= t.custo;
     G.temasComprados.push(id);
+    mostrarNotif('Tema desbloqueado: '+t.nome+'! 🎨');
   }
   G.tema = id;
   // Aplicar tema
