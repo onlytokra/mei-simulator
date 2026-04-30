@@ -140,6 +140,17 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   .submenu-btn{background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-size:11px;padding:5px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.15s;white-space:nowrap;}
   .submenu-btn:hover{border-color:var(--border2);color:var(--text);}
   .submenu-btn.ativo{background:var(--bg);border-color:var(--green);color:var(--green);font-weight:500;}
+
+  /* CARDS DE DESTAQUE */
+  .destaque-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem;}
+  .destaque-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:0.75rem;cursor:pointer;transition:border-color 0.15s,transform 0.15s;text-align:center;position:relative;overflow:hidden;}
+  .destaque-card:hover{border-color:var(--green);transform:scale(1.02);}
+  .destaque-card.cassino-card{border-color:#cc4400;background:linear-gradient(135deg,#1a0800,#2a1000);}
+  .destaque-card.loja-card{border-color:var(--gold);background:linear-gradient(135deg,#1a1500,#2a2000);}
+  .destaque-titulo{font-size:14px;font-weight:600;margin-bottom:4px;}
+  .destaque-sub{font-size:11px;color:var(--text2);margin-bottom:8px;}
+  .destaque-emojis{font-size:22px;letter-spacing:4px;margin-bottom:6px;}
+  .destaque-btn{display:inline-block;font-size:11px;padding:4px 12px;border-radius:20px;font-weight:500;}
 </style>
 </head>
 <body>
@@ -403,6 +414,22 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   <button class="btn-click" id="btn-clique">👆 Trabalhar manualmente</button>
   <div class="combo-badge" id="combo-badge">⚡ COMBO x1</div>
   <div class="combo-bar"><div class="combo-fill" id="combo-fill" style="width:0%"></div></div>
+
+  <!-- VITRINE: CASSINO E LOJA -->
+  <div class="destaque-grid">
+    <div class="destaque-card cassino-card" onclick="trocarTab('cassino', document.querySelector('.submenu-btn[onclick*=cassino]'))">
+      <div class="destaque-emojis">🎰🎡🐾</div>
+      <div class="destaque-titulo" style="color:#ff6622">Cassino</div>
+      <div class="destaque-sub">Caça-níquel, Roleta<br>e Jogo do Bicho</div>
+      <div class="destaque-btn" style="background:#cc4400;color:#fff">Jogar agora →</div>
+    </div>
+    <div class="destaque-card loja-card" onclick="trocarTab('loja', document.querySelector('.submenu-btn[onclick*=loja]'))">
+      <div class="destaque-emojis">👑💎🏆</div>
+      <div class="destaque-titulo" style="color:var(--gold)">Loja</div>
+      <div class="destaque-sub">Troféus, títulos<br>e temas exclusivos</div>
+      <div class="destaque-btn" style="background:#886600;color:#fff">Ver itens →</div>
+    </div>
+  </div>
 
   <div class="stats-grid">
     <div class="stat"><div class="stat-label">Total ganho</div><div class="stat-val" id="stat-total">R$0</div></div>
