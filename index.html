@@ -178,6 +178,7 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
       <div id="login-erro" style="font-size:12px;color:var(--red);margin-top:6px;text-align:center"></div>
     </div>
     <button class="modal-btn secondary" onclick="jogarSemConta()" style="margin-top:8px">Jogar sem conta</button>
+    <div id="auth-debug" style="margin-top:10px;font-size:11px;color:#aaa;text-align:center;word-break:break-all;"></div>
   </div>
 </div>
 
@@ -1209,6 +1210,7 @@ function mostrarAba(aba){
 }
 
 async function registrar(){
+  const debug = document.getElementById('auth-debug');
   const nick=document.getElementById('reg-nick').value.trim();
   const email=document.getElementById('reg-email').value.trim();
   const senha=document.getElementById('reg-senha').value;
@@ -1217,14 +1219,19 @@ async function registrar(){
   if(!email){erro.textContent='Digite seu e-mail!';return;}
   if(senha.length<6){erro.textContent='Senha mínimo 6 caracteres!';return;}
   erro.textContent='Criando conta...';
+  if(debug) debug.textContent='Conectando ao Firebase...';
   try{
+    if(debug) debug.textContent='Tentando criar usuário...';
     const cred=await auth.createUserWithEmailAndPassword(email,senha);
+    if(debug) debug.textContent='Usuário criado! Salvando perfil...';
     await cred.user.updateProfile({displayName:nick});
     await db.collection('usuarios').doc(cred.user.uid).set({nickname:nick,email,criadoEm:new Date().toISOString(),totalGanho:0,avatar:'🧑‍💼'});
     G.nickname=nick;iniciarJogo(cred.user,true);
   }catch(e){
+    console.error('Erro auth:', e);
     const msgs={'auth/email-already-in-use':'E-mail já cadastrado!','auth/invalid-email':'E-mail inválido!','auth/weak-password':'Senha fraca!'};
     erro.textContent=msgs[e.code]||e.message;
+    if(debug) debug.textContent='Erro: '+e.code+' — '+e.message;
   }
 }
 
@@ -1243,14 +1250,21 @@ async function login(){
 }
 
 function jogarSemConta(){
-  semConta=true;carregarLocal();
-  document.getElementById('modal-auth').style.display='none';
-  document.getElementById('game').style.display='block';
-  document.getElementById('header-nick').textContent='Jogador Local';
-  document.getElementById('user-nick-bar').textContent='Jogador Local';
-  document.getElementById('sync-status').textContent='💾 Local';
-  document.getElementById('avatar-display').textContent=G.avatar||'🧑‍💼';
-  gerarMissoes();iniciarLoop();
+  try{
+    semConta=true;carregarLocal();
+    document.getElementById('modal-auth').style.display='none';
+    document.getElementById('game').style.display='block';
+    document.getElementById('header-nick').textContent='Jogador Local';
+    document.getElementById('user-nick-bar').textContent='Jogador Local';
+    document.getElementById('sync-status').textContent='💾 Local';
+    document.getElementById('avatar-display').textContent=G.avatar||'🧑‍💼';
+    gerarMissoes();iniciarLoop();
+  }catch(e){
+    console.error('Erro jogarSemConta:', e);
+    const debug=document.getElementById('auth-debug');
+    if(debug) debug.textContent='Erro: '+e.message;
+    alert('Erro ao iniciar: '+e.message);
+  }
 }
 
 async function iniciarJogo(user,isNovo){
