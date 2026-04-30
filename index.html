@@ -525,8 +525,10 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
 <script>
 const firebaseConfig={apiKey:"AIzaSyBlyyqB6nG8PeqT3_Ntsktv0p5M16P7iHs",authDomain:"mei-simulator.firebaseapp.com",projectId:"mei-simulator",storageBucket:"mei-simulator.firebasestorage.app",messagingSenderId:"661998490702",appId:"1:661998490702:web:03e30c9e0f09e780a81f1f",measurementId:"G-71WXMYWLWR"};
 firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth();
-const db=firebase.firestore();
+const auth = firebase.auth();
+const db = firebase.firestore();
+// Configurar idioma do auth
+auth.languageCode = 'pt';
 
 let currentUser=null,semConta=false,ultimoSave=0;
 let chatListener=null;
