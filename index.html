@@ -1225,7 +1225,7 @@ async function registrar(){
     const cred=await auth.createUserWithEmailAndPassword(email,senha);
     if(debug) debug.textContent='Usuário criado! Salvando perfil...';
     await cred.user.updateProfile({displayName:nick});
-    await db.collection('usuarios').doc(cred.user.uid).set({nickname:nick,email,criadoEm:new Date().toISOString(),totalGanho:0,avatar:'🧑‍💼'});
+    await db.collection('usuarios').doc(cred.user.uid).set({nickname:nick,email,criadoEm:new Date().toISOString(),totalGanho:0,avatar:'🧑‍💼'},{merge:true});
     G.nickname=nick;iniciarJogo(cred.user,true);
   }catch(e){
     console.error('Erro auth:', e);
@@ -1377,7 +1377,7 @@ async function salvarNuvem(){
   if(semConta||!currentUser){salvarLocal();return;}
   try{
     await db.collection('saves').doc(currentUser.uid).set(montarSave());
-    await db.collection('usuarios').doc(currentUser.uid).update({totalGanho:G.totalGanho,nickname:G.nickname,avatar:G.avatar,ultimaVez:new Date().toISOString()});
+    await db.collection('usuarios').doc(currentUser.uid).set({totalGanho:G.totalGanho,nickname:G.nickname,avatar:G.avatar,ultimaVez:new Date().toISOString()},{merge:true});
     await atualizarRankingSemanal();
     setSyncStatus('ok');
   }catch(e){setSyncStatus('erro');salvarLocal();}
