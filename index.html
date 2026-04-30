@@ -418,13 +418,13 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
 
   <!-- VITRINE: CASSINO E LOJA -->
   <div class="destaque-grid">
-    <div class="destaque-card cassino-card" onclick="trocarTab('cassino', document.querySelector('.submenu-btn[onclick*=cassino]'))">
+    <div class="destaque-card cassino-card" onclick="trocarTab('cassino', document.querySelector('.submenu-btn[onclick*=cassino]')); setTimeout(()=>document.getElementById('tab-cassino').scrollIntoView({behavior:'smooth', block:'start'}), 100)">
       <div class="destaque-emojis">🎰🎡🐾</div>
       <div class="destaque-titulo" style="color:#ff6622">Cassino</div>
       <div class="destaque-sub">Caça-níquel, Roleta<br>e Jogo do Bicho</div>
       <div class="destaque-btn" style="background:#cc4400;color:#fff">Jogar agora →</div>
     </div>
-    <div class="destaque-card loja-card" onclick="trocarTab('loja', document.querySelector('.submenu-btn[onclick*=loja]'))">
+    <div class="destaque-card loja-card" onclick="trocarTab('loja', document.querySelector('.submenu-btn[onclick*=loja]')); setTimeout(()=>document.getElementById('tab-loja').scrollIntoView({behavior:'smooth', block:'start'}), 100)">
       <div class="destaque-emojis">👑💎🏆</div>
       <div class="destaque-titulo" style="color:var(--gold)">Loja</div>
       <div class="destaque-sub">Troféus, títulos<br>e temas exclusivos</div>
