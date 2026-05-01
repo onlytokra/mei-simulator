@@ -820,7 +820,6 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
       <div class="eu-item" onclick="trocarSecaoEu('stats')"><div class="eu-item-icon">📊</div><div class="eu-item-nome">Stats</div></div>
       <div class="eu-item" onclick="trocarSecaoEu('historico')"><div class="eu-item-icon">📰</div><div class="eu-item-nome">Histórico</div></div>
       <div class="eu-item" onclick="trocarSecaoEu('historia')"><div class="eu-item-icon">📖</div><div class="eu-item-nome">Império</div></div>
-      <div class="eu-item" onclick="trocarSecaoEu('historia')"><div class="eu-item-icon">📖</div><div class="eu-item-nome">Império</div></div>
     </div>
     <!-- Sub-conteúdo eu -->
     <div id="eu-sub-content" style="margin-top:0.75rem"></div>
@@ -4878,14 +4877,39 @@ function verificarCachorraoOuro(ganho) {
 }
 
 // Adicionar Historia do Imperio no trocarSecaoEu
-const _trocarSecaoEu_orig = trocarSecaoEu;
 function trocarSecaoEu(secao) {
-  if(secao === 'historia'){
-    const el = document.getElementById('eu-sub-content');
-    if(el) renderHistoriaImperio();
-    return;
-  }
-  _trocarSecaoEu_orig(secao);
+  // Garantir que estamos na tela EU
+  if(telaAtual !== 'eu') irParaTela('eu');
+
+  const el = document.getElementById('eu-sub-content');
+  if(!el){ setTimeout(()=>trocarSecaoEu(secao), 200); return; }
+
+  // Montar HTML do container
+  const containers = {
+    historia: '<div id="historia-content"></div>',
+    loja: '<div id="loja-content"></div>',
+    missoes: '<div id="lista-missoes"></div>',
+    extrato: '<div id="extrato-content"></div>',
+    stats: '<div id="stats-content"></div>',
+    historico: '<p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Últimos 20 eventos.</p><div id="lista-historico"></div>',
+    molduras: '<div id="social-content"></div>',
+  };
+
+  if(!containers[secao]) return;
+  el.innerHTML = containers[secao];
+
+  // Renderizar após DOM atualizar
+  setTimeout(() => {
+    if(secao === 'historia') renderHistoriaImperio();
+    else if(secao === 'loja') renderLoja();
+    else if(secao === 'missoes') renderMissoes();
+    else if(secao === 'extrato') renderExtrato();
+    else if(secao === 'stats') renderStats();
+    else if(secao === 'historico') renderHistorico();
+    else if(secao === 'molduras') renderSocial();
+    // Scroll após renderizar
+    setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}), 100);
+  }, 50);
 }
 
 
