@@ -165,9 +165,46 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   @keyframes pulsaDiamante { from{box-shadow:0 0 8px #8888ff,0 0 16px #6666ff44}to{box-shadow:0 0 20px #ccccff,0 0 40px #aaaaff88} }
   @keyframes pulsaNeon { from{box-shadow:0 0 6px #00ff88,0 0 12px #00ff8844}to{box-shadow:0 0 16px #00ffaa,0 0 32px #00ff8888} }
   @keyframes arcoiris { 0%{border-color:#ff0000;box-shadow:0 0 12px #ff0000}25%{border-color:#ffdd00;box-shadow:0 0 12px #ffdd00}50%{border-color:#00ff88;box-shadow:0 0 12px #00ff88}75%{border-color:#4a9aff;box-shadow:0 0 12px #4a9aff}100%{border-color:#ff0000;box-shadow:0 0 12px #ff0000} }
+
+  /* PERFIL PÚBLICO */
+  .perfil-modal-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1rem;}
+  .perfil-banner{height:80px;position:relative;}
+  .perfil-avatar-wrap{position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);font-size:44px;background:var(--bg2);border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;border:3px solid var(--border2);}
+  .perfil-info{padding:2.5rem 1rem 1rem;text-align:center;}
+  .perfil-nome{font-size:16px;font-weight:600;color:var(--text);}
+  .perfil-titulo{font-size:12px;color:var(--gold);margin-top:2px;}
+  .perfil-bio{font-size:12px;color:var(--text2);font-style:italic;margin-top:4px;}
+  .perfil-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:1rem;padding:0 0.5rem;}
+  .perfil-stat{background:var(--bg3);border-radius:8px;padding:0.5rem;text-align:center;}
+  .perfil-stat-val{font-size:14px;font-weight:500;color:var(--text);}
+  .perfil-stat-label{font-size:10px;color:var(--text2);margin-top:2px;}
+  .busca-resultado{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:0.6rem 0.8rem;margin-bottom:0.4rem;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color 0.15s;}
+  .busca-resultado:hover{border-color:var(--green);}
 </style>
 </head>
 <body>
+
+<!-- MODAL PERFIL PÚBLICO -->
+<div id="modal-perfil-publico" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <div id="perfil-publico-content"></div>
+    <button class="modal-btn secondary" onclick="fecharModal('modal-perfil-publico')" style="margin-top:0">Fechar</button>
+  </div>
+</div>
+
+<!-- MODAL BUSCA DE JOGADORES -->
+<div id="modal-busca" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <div class="modal-titulo">🔍 Buscar Jogador</div>
+    <div class="modal-sub">Encontre qualquer jogador pelo nickname</div>
+    <div style="display:flex;gap:8px;margin-bottom:1rem">
+      <input type="text" id="busca-input" placeholder="Digite o nickname..." style="margin-bottom:0;flex:1" onkeydown="if(event.key==='Enter')buscarJogador()">
+      <button class="modal-btn" style="margin-top:0;width:auto;padding:8px 16px" onclick="buscarJogador()">🔍</button>
+    </div>
+    <div id="busca-resultados"></div>
+    <button class="modal-btn secondary" onclick="fecharModal('modal-busca')" style="margin-top:8px">Fechar</button>
+  </div>
+</div>
 
 <!-- MODAL AUTH -->
 <div id="modal-auth" class="modal-overlay">
@@ -378,6 +415,7 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
     <div class="header-btns">
       <button class="btn-small" onclick="abrirModal('modal-intro')">? ajuda</button>
       <button class="btn-small" onclick="abrirConquistas()">🏆</button>
+      <button class="btn-small" onclick="abrirModal('modal-busca')">🔍</button>
       <button class="btn-small" onclick="abrirRanking()">🏅</button>
       <button class="btn-small" onclick="abrirModal('modal-patch')">📋</button>
       <button class="btn-small" onclick="abrirShare()">📸</button>
@@ -1474,7 +1512,8 @@ async function carregarRanking(aba){
     snap.docs.forEach((doc,i)=>{
       const d=doc.data();const div=document.createElement('div');div.className='ranking-item';
       const medals=['🥇','🥈','🥉'];
-      div.innerHTML=`<div style="font-size:16px;min-width:24px">${medals[i]||'#'+(i+1)}</div><div style="font-size:16px">${d.avatar||'🧑‍💼'}</div><div style="flex:1;font-size:13px;color:var(--text)">${d.nickname||'Anônimo'}</div><div style="font-size:13px;color:var(--green);font-weight:500">${fmt(d.totalGanho||0)}</div>`;
+      const nickClicavel = d.nickname ? `<span style="cursor:pointer;color:var(--text);text-decoration:underline dotted" onclick="verPerfilPorNick('${d.nickname}')">${d.nickname}</span>` : 'Anônimo';
+      div.innerHTML=`<div style="font-size:16px;min-width:24px">${medals[i]||'#'+(i+1)}</div><div style="font-size:16px">${d.avatar||'🧑‍💼'}</div><div style="flex:1;font-size:13px">${nickClicavel}</div><div style="font-size:13px;color:var(--green);font-weight:500">${fmt(d.totalGanho||0)}</div>`;
       lista.appendChild(div);
     });
   }catch(e){lista.innerHTML='<div style="color:var(--red);text-align:center;padding:1rem">Erro ao carregar.</div>';}
@@ -3584,6 +3623,158 @@ function aplicarMolduraAvatar(){
   }
 }
 setTimeout(aplicarMolduraAvatar,1000);
+
+// ===================================================
+// PERFIS PÚBLICOS
+// ===================================================
+
+async function buscarJogador() {
+  const input = document.getElementById('busca-input');
+  const resultados = document.getElementById('busca-resultados');
+  const nick = input?.value?.trim();
+  if (!nick) { resultados.innerHTML = '<div style="color:var(--red);font-size:13px">Digite um nickname!</div>'; return; }
+
+  resultados.innerHTML = '<div style="color:var(--text2);font-size:13px;text-align:center">Buscando...</div>';
+  try {
+    const snap = await db.collection('usuarios')
+      .orderBy('nickname')
+      .startAt(nick)
+      .endAt(nick + '\uf8ff')
+      .limit(10)
+      .get();
+
+    if (snap.empty) {
+      resultados.innerHTML = '<div style="color:var(--text3);font-size:13px;text-align:center">Nenhum jogador encontrado.</div>';
+      return;
+    }
+
+    resultados.innerHTML = '';
+    snap.docs.forEach(doc => {
+      const d = doc.data();
+      const div = document.createElement('div');
+      div.className = 'busca-resultado';
+      const liga = getLigaPorTotal(d.totalGanho || 0);
+      div.innerHTML = `
+        <div style="font-size:24px">${d.avatar || '🧑\u200d💼'}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500;color:var(--text)">${d.nickname}</div>
+          <div style="font-size:11px;color:var(--text2)">${liga.icon} Liga ${liga.nome} · ${fmt(d.totalGanho || 0)}</div>
+        </div>
+        <div style="font-size:11px;color:var(--green)">Ver perfil →</div>
+      `;
+      div.onclick = () => {
+        fecharModal('modal-busca');
+        verPerfilPorUID(doc.id, d);
+      };
+      resultados.appendChild(div);
+    });
+  } catch(e) {
+    resultados.innerHTML = '<div style="color:var(--red);font-size:13px">Erro ao buscar. Tente novamente.</div>';
+  }
+}
+
+async function verPerfilPorNick(nick) {
+  try {
+    const snap = await db.collection('usuarios').where('nickname', '==', nick).limit(1).get();
+    if (!snap.empty) verPerfilPorUID(snap.docs[0].id, snap.docs[0].data());
+    else mostrarNotif('Jogador não encontrado!');
+  } catch(e) { mostrarNotif('Erro ao carregar perfil.'); }
+}
+
+async function verPerfilPorUID(uid, dadosCache) {
+  abrirModal('modal-perfil-publico');
+  const el = document.getElementById('perfil-publico-content');
+  el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text2)">Carregando...</div>';
+
+  try {
+    // Buscar dados completos
+    let d = dadosCache || {};
+    let saveData = {};
+    try {
+      const saveDoc = await db.collection('saves').doc(uid).get();
+      if (saveDoc.exists) saveData = saveDoc.data();
+    } catch(e) {}
+
+    const liga = getLigaPorTotal(d.totalGanho || 0);
+    const trofeus = saveData.trofeus || [];
+    const trofDisplay = trofeus.length > 0 ? trofeus.map(t => t.icon).join(' ') : '—';
+    const negocios = (saveData.negocios || []).filter(n => n.qtd > 0).length;
+    const banner = BANNERS_LOJA.find(b => b.id === (saveData.banner || 'nenhum'));
+    const moldura = saveData.moldura || 'nenhuma';
+    const titulo = saveData.titulo || '';
+    const bio = saveData.bio || '';
+    const guild = saveData.guildNome || null;
+    const ehVoce = currentUser && currentUser.uid === uid;
+
+    el.innerHTML = `
+      <div class="perfil-modal-card">
+        <div class="perfil-banner" style="background:${banner?.cor || 'var(--bg3)'}">
+          <div class="perfil-avatar-wrap">
+            <div class="${moldura !== 'nenhuma' ? 'moldura-' + moldura : ''}" style="font-size:36px">${d.avatar || '🧑\u200d💼'}</div>
+          </div>
+        </div>
+        <div class="perfil-info">
+          <div class="perfil-nome">${d.nickname || 'Jogador'}</div>
+          ${titulo ? `<div class="perfil-titulo">${titulo}</div>` : ''}
+          ${bio ? `<div class="perfil-bio">"${bio}"</div>` : ''}
+          ${guild ? `<div style="font-size:11px;color:var(--purple);margin-top:4px">🏰 ${guild}</div>` : ''}
+          <div style="font-size:20px;margin-top:8px">${trofDisplay}</div>
+          <div class="perfil-stats">
+            <div class="perfil-stat">
+              <div class="perfil-stat-val">${liga.icon} ${liga.nome}</div>
+              <div class="perfil-stat-label">Liga</div>
+            </div>
+            <div class="perfil-stat">
+              <div class="perfil-stat-val">${fmt(d.totalGanho || 0)}</div>
+              <div class="perfil-stat-label">Total ganho</div>
+            </div>
+            <div class="perfil-stat">
+              <div class="perfil-stat-val">${negocios}</div>
+              <div class="perfil-stat-label">Negócios</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      ${!ehVoce ? `
+        <div style="display:flex;gap:8px">
+          <button class="modal-btn" onclick="abrirPresenteAmigo('${d.nickname}')" style="flex:1;background:var(--green)">🎁 Mandar presente</button>
+          <button class="modal-btn red" onclick="abrirSabotagem('${d.nickname}')" style="flex:1">💣 Sabotar</button>
+        </div>
+      ` : '<div style="text-align:center;font-size:12px;color:var(--text3)">Este é o seu perfil</div>'}
+    `;
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--red);text-align:center;padding:1rem">Erro ao carregar perfil.</div>';
+  }
+}
+
+function getLigaPorTotal(t) {
+  if(t>=1e10)return{nome:'Lenda',icon:'💜'};
+  if(t>=1e8)return{nome:'Diamante',icon:'💎'};
+  if(t>=1e6)return{nome:'Ouro',icon:'🥇'};
+  if(t>=1e4)return{nome:'Prata',icon:'🥈'};
+  return{nome:'Bronze',icon:'🥉'};
+}
+
+function abrirPresenteAmigo(nick) {
+  fecharModal('modal-perfil-publico');
+  abrirModal('modal-presente-amigo');
+  setTimeout(() => {
+    const input = document.getElementById('presente-nick-dest');
+    if (input) input.value = nick;
+  }, 100);
+}
+
+function abrirSabotagem(nick) {
+  fecharModal('modal-perfil-publico');
+  // Abrir aba social e preencher nick
+  trocarTab('social', document.querySelector('.submenu-btn[onclick*="social"]'));
+  setTimeout(() => {
+    const input = document.getElementById('sabotagem-nick');
+    if (input) { input.value = nick; input.focus(); }
+    document.getElementById('tab-social')?.scrollIntoView({behavior:'smooth'});
+  }, 200);
+}
+
 
 </script>
 </body>
