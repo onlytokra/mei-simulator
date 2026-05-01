@@ -1832,6 +1832,7 @@ async function salvarNuvem(){
     await db.collection('usuarios').doc(currentUser.uid).set({totalGanho:G.totalGanho,nickname:G.nickname,avatar:G.avatar,ultimaVez:new Date().toISOString()},{merge:true});
     await atualizarRankingSemanal();
     setSyncStatus('ok');
+    salvarStatsCassino();
   }catch(e){setSyncStatus('erro');salvarLocal();}
 }
 
@@ -1882,31 +1883,6 @@ async function abrirRanking(){
   trocarRanking('alltime');
 }
 
-async function carregarRanking(aba){
-  const lista = document.getElementById('lista-ranking');
-  const info = document.getElementById('rank-reset-info');
-  lista.innerHTML='<div style="text-align:center;padding:1rem;color:var(--text2)">Carregando...</div>';
-  try{
-    let snap;
-    if(aba === 'alltime'){
-      info.textContent = '🏆 Maior total ganho de todos os tempos';
-      snap = await db.collection('usuarios').orderBy('totalGanho','desc').limit(10).get();
-    } else {
-      const semana = getSemanaAtual();
-      info.textContent = '📅 Reseta em ' + getProximoReset() + ' | Semana de ' + semana;
-      snap = await db.collection('ranking_semanal').doc(semana).collection('scores').orderBy('totalGanho','desc').limit(10).get();
-    }
-    lista.innerHTML='';
-    if(snap.empty){lista.innerHTML='<div style="color:var(--text3);text-align:center;padding:1rem">Nenhum jogador ainda!</div>';return;}
-    snap.docs.forEach((doc,i)=>{
-      const d=doc.data();const div=document.createElement('div');div.className='ranking-item';
-      const medals=['🥇','🥈','🥉'];
-      const nickClicavel = d.nickname ? `<span style="cursor:pointer;color:var(--text);text-decoration:underline dotted" onclick="verPerfilPorNick('${d.nickname}')">${d.nickname}</span>` : 'Anônimo';
-      div.innerHTML=`<div style="font-size:16px;min-width:24px">${medals[i]||'#'+(i+1)}</div><div style="font-size:16px">${d.avatar||'🧑‍💼'}</div><div style="flex:1;font-size:13px">${nickClicavel}</div><div style="font-size:13px;color:var(--green);font-weight:500">${fmt(d.totalGanho||0)}</div>`;
-      lista.appendChild(div);
-    });
-  }catch(e){lista.innerHTML='<div style="color:var(--red);text-align:center;padding:1rem">Erro ao carregar.</div>';}
-}
 
 async function atualizarRankingSemanal(){
   if(!currentUser || semConta) return;
@@ -1940,6 +1916,9 @@ function getLiga(){
 }
 
 function calcRPS(){
+  // Podcast tem RPS especial baseado na reputação
+  const podcast = G.negocios.find(n=>n.id==='podcast');
+  if(podcast && podcast.qtd > 0) podcast.rps = G.repNivel * 50 * podcast.qtd;
   let r=0;
   const negsAbertos=G.negocios.filter(n=>n.qtd>0).length;
   const h2=HABILIDADES.find(x=>x.tipo==='neg');
@@ -2529,6 +2508,7 @@ function loop(now){
   // Resto atualiza a cada 2 segundos
   if(Math.floor(G.tick*0.5)!==Math.floor((G.tick-dt)*0.5)){renderDinheiro();renderNegocios();checarConquistas();atualizarMissoes();verificarMarcosImperio();verificarFalido();}
   if(Math.floor(G.tick)%60===0&&Math.floor(G.tick)!==Math.floor(G.tick-dt)){if(G.negocios.some(n=>n.qtd>0))dispararEvento();}
+  if(Math.floor(G.tick)%300===0&&Math.floor(G.tick)!==Math.floor(G.tick-dt)&&G.tick>60){if(G.negocios.filter(n=>n.qtd>0).length>=3)dispararEventoEscolha();}
 
   // Guild contribuição passiva
   if(Math.floor(G.tick)%60===0&&Math.floor(G.tick)!==Math.floor(G.tick-dt)){if(G.guildId)contribuirGuild(calcRPS()*60*0.01);}
@@ -4724,7 +4704,7 @@ function registrarHistoria(txt, icon='🏆') {
   const agora = new Date();
   const data = agora.toLocaleDateString('pt-BR');
   const hora = agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  G.historiaImperio.push({txt, icon, data, hora, ts: Date.now()});
+  G.historiaImperio.push({txt, desc:txt, icon, data, hora, total:G.totalGanho, ts: Date.now()});
   if(G.historiaImperio.length > 50) G.historiaImperio.shift();
 }
 
@@ -4746,6 +4726,12 @@ function verificarMarcosImperio() {
     {id:'clique_1k', cliques:1000, txt:'1.000 cliques! Mão de ferro!', icon:'👆'},
     {id:'clique_10k', cliques:10000, txt:'10.000 cliques! Workaholic!', icon:'⚡'},
     {id:'rep_5', rep:5, txt:'Reputação nível 5! Empresário do Ano!', icon:'⭐'},
+    {id:'cassino_100k', txt:'R$100k apostados no cassino! Você tem um problema.', icon:'🎰', check:()=>G.cassinoEstatisticas?.jogadas>=50},
+    {id:'guild_join', txt:'Entrou em uma guild! Força coletiva!', icon:'🏰', check:()=>!!G.guildId},
+    {id:'sabotar_1', txt:'Primeira sabotagem enviada! Vilão confirmado!', icon:'💣', check:()=>G.conquistasSecretasDesbloqueadas?.includes('cs11')},
+    {id:'neg_abs', txt:'Abriu um negócio absurdo! Criatividade máxima!', icon:'🤪', check:()=>G.negocios?.find(n=>['agua_praia','shein','relogio','crossfit','podcast','nft'].includes(n.id)&&n.qtd>0)},
+    {id:'trofeu_1', txt:'Comprou seu primeiro troféu! Ostentação aprovada!', icon:'🏆', check:()=>G.trofeus?.length>0},
+    {id:'moldura_1', txt:'Equipou uma moldura! Estilo ativado!', icon:'✨', check:()=>G.moldura&&G.moldura!=='nenhuma'},
   ];
 
   marcos.forEach(m => {
@@ -4755,6 +4741,7 @@ function verificarMarcosImperio() {
     if(m.neg && G.negocios.filter(n=>n.qtd>0).length >= m.neg) atingido = true;
     if(m.cliques && G.cliques >= m.cliques) atingido = true;
     if(m.rep && G.repNivel >= m.rep) atingido = true;
+    if(m.check){ try{ if(m.check()) atingido = true; }catch(e){} }
     if(atingido) {
       marcosVerificados[m.id] = true;
       registrarHistoria(m.txt, m.icon);
@@ -4984,8 +4971,8 @@ function renderHistoriaImperio() {
       <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);${isUltimo?'border-color:var(--green)':''}">
         <div style="font-size:24px;min-width:36px;text-align:center">${h.icon}</div>
         <div style="flex:1">
-          <div style="font-size:13px;font-weight:500;color:${isUltimo?'var(--green)':'var(--text)'}">${h.desc}</div>
-          <div style="font-size:11px;color:var(--text3);margin-top:2px">${h.data} às ${h.hora} · patrimônio: ${fmt(h.total)}</div>
+          <div style="font-size:13px;font-weight:500;color:${isUltimo?'var(--green)':'var(--text)'}">${h.txt||h.desc||''}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${h.data} às ${h.hora}${h.total?' · patrimônio: '+fmt(h.total):''}</div>
         </div>
         ${isUltimo?'<div style="font-size:10px;color:var(--green);font-weight:500">RECENTE</div>':''}
       </div>
@@ -5018,6 +5005,201 @@ function compartilharHistoria() {
 // Verificar marcos a cada 10 segundos no loop
 let historiaTick = 0;
 const _loopOriginal_historia = loop;
+
+
+// ===================================================
+// EVENTOS COM ESCOLHA DO JOGADOR
+// ===================================================
+
+// Modal de escolha de evento
+function mostrarEventoEscolha(evento) {
+  // Criar modal dinâmico
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'modal-evento-escolha';
+  overlay.style.display = 'flex';
+
+  const opcoes = evento.opcoes.map((op, i) => `
+    <button class="modal-btn ${i===0?'':'secondary'}" 
+      onclick="resolverEscolha('modal-evento-escolha', ${i}, ${JSON.stringify(evento.opcoes).replace(/"/g,'&quot;')})"
+      style="margin-top:8px">
+      ${op.icon} ${op.texto}
+      <div style="font-size:11px;opacity:0.8;margin-top:2px">${op.desc}</div>
+    </button>
+  `).join('');
+
+  overlay.innerHTML = `
+    <div class="modal" style="text-align:center">
+      <div style="font-size:48px;margin-bottom:8px">${evento.icon}</div>
+      <div class="modal-titulo">${evento.titulo}</div>
+      <div class="modal-sub">${evento.desc}</div>
+      <div style="margin-top:0.5rem">${opcoes}</div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function resolverEscolha(modalId, opcaoIdx, opcoes) {
+  const modal = document.getElementById(modalId);
+  if(modal) modal.remove();
+  const op = opcoes[opcaoIdx];
+  if(!op || !op.efeito) return;
+
+  const e = op.efeito;
+  if(e.bonus){ G.dinheiro += e.bonus; G.totalGanho += e.bonus; mostrarNotif(op.icon+' +'+fmt(e.bonus)+'!'); registrarExtrato(op.texto, e.bonus, op.icon); }
+  if(e.multa){ G.dinheiro = Math.max(0, G.dinheiro - e.multa); mostrarNotif(op.icon+' -'+fmt(e.multa)+'!'); registrarExtrato(op.texto, -e.multa, op.icon); }
+  if(e.boost){ G.boostAtivo = e.boost; setTimeout(()=>{ G.boostAtivo = 1; }, (e.dur||30)*1000); mostrarNotif(op.icon+' '+e.boost+'x por '+e.dur+'s!'); }
+  if(e.rep){ G.reputacao += e.rep; mostrarNotif(op.icon+' +'+e.rep+' reputação!'); }
+  if(e.emprestimo){ pegarEmprestimo(e.emprestimo); }
+  if(e.shake) shakeTela();
+  if(e.confete){ spawnConfete(); flashBrilho('#cc9'); }
+  renderDinheiro();
+}
+
+const EVENTOS_ESCOLHA = [
+  {
+    id:'crise_eco',
+    icon:'📉',
+    titulo:'Crise Econômica!',
+    desc:'A economia despencou. Como você reage?',
+    opcoes:[
+      { icon:'✂️', texto:'Demitir funcionários', desc:'Economiza R$50k mas perde reputação', efeito:{bonus:50000, rep:-20} },
+      { icon:'💸', texto:'Pedir empréstimo', desc:'Mantém tudo funcionando mas cria dívida', efeito:{emprestimo:15000} },
+      { icon:'🎯', texto:'Aguentar firme', desc:'Perde 20% de renda por 1 min', efeito:{boost:0.8, dur:60, shake:true} },
+    ]
+  },
+  {
+    id:'oportunidade',
+    icon:'💼',
+    titulo:'Oportunidade de Negócio!',
+    desc:'Um investidor quer fazer parceria. Qual condição?',
+    opcoes:[
+      { icon:'💰', texto:'Dinheiro agora', desc:'Recebe R$20k imediatamente', efeito:{bonus:20000} },
+      { icon:'📈', texto:'Boost de produção', desc:'2x produção por 45 segundos', efeito:{boost:2, dur:45, confete:true} },
+      { icon:'⭐', texto:'Reputação', desc:'+50 pontos de reputação', efeito:{rep:50} },
+    ]
+  },
+  {
+    id:'fiscalizacao_aviso',
+    icon:'🚨',
+    titulo:'Aviso de Fiscalização!',
+    desc:'Receberá uma visita em breve. O que fazer?',
+    opcoes:[
+      { icon:'🧹', texto:'Colocar tudo em ordem', desc:'Paga R$5k mas evita a multa', efeito:{multa:5000} },
+      { icon:'🤞', texto:'Arriscar', desc:'50% de chance de sair ileso ou pagar multa dobrada', efeito:{bonus: Math.random()>0.5? 0 : -20000, shake:true} },
+      { icon:'📞', texto:'Ligar pro advogado', desc:'Custa R$10k mas garante proteção total', efeito:{multa:10000} },
+    ]
+  },
+  {
+    id:'viral_momento',
+    icon:'🎥',
+    titulo:'Momento Viral!',
+    desc:'Seu negócio tá bombando nas redes. Como aproveitar?',
+    opcoes:[
+      { icon:'🛍️', texto:'Promoção relâmpago', desc:'3x vendas por 20s mas depois cai', efeito:{boost:3, dur:20, confete:true} },
+      { icon:'📣', texto:'Anunciar novo produto', desc:'+R$30k de pedidos antecipados', efeito:{bonus:30000} },
+      { icon:'⭐', texto:'Focar na reputação', desc:'+80 pontos de reputação', efeito:{rep:80} },
+    ]
+  },
+  {
+    id:'fornecedor',
+    icon:'🚚',
+    titulo:'Proposta do Fornecedor!',
+    desc:'Novo fornecedor quer fechar contrato exclusivo.',
+    opcoes:[
+      { icon:'✅', texto:'Aceitar contrato', desc:'-30% custo de negócios por 2 min', efeito:{boost:1.3, dur:120} },
+      { icon:'💰', texto:'Negociar bônus', desc:'Recebe R$15k mas sem desconto', efeito:{bonus:15000} },
+      { icon:'❌', texto:'Recusar', desc:'Mantém independência, sem efeito', efeito:{} },
+    ]
+  },
+];
+
+let eventoEscolhaUsado = {};
+
+function dispararEventoEscolha() {
+  const disponiveis = EVENTOS_ESCOLHA.filter(e => !eventoEscolhaUsado[e.id] ||
+    Date.now() - eventoEscolhaUsado[e.id] > 300000); // 5 min cooldown
+  if(!disponiveis.length) return false;
+  const ev = disponiveis[Math.floor(Math.random()*disponiveis.length)];
+  eventoEscolhaUsado[ev.id] = Date.now();
+  mostrarEventoEscolha(ev);
+  return true;
+}
+
+// ===================================================
+// TORNEIOS SEMANAIS POR CATEGORIA
+// ===================================================
+async function abrirTorneios() {
+  abrirModal('modal-ranking');
+  // Adicionar aba torneios ao ranking
+  const sub = document.getElementById('rank-reset-info');
+  if(sub) sub.innerHTML = `
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:0.5rem">
+      <button class="btn-small" onclick="trocarRanking('alltime')">🏆 All Time</button>
+      <button class="btn-small" onclick="trocarRanking('semanal')">📅 Semanal</button>
+      <button class="btn-small" style="color:var(--gold);border-color:var(--gold)" onclick="trocarRanking('cassino')">🎰 Cassino</button>
+      <button class="btn-small" style="color:var(--red);border-color:var(--red)" onclick="trocarRanking('sabotadores')">💣 Sabotadores</button>
+    </div>
+  `;
+}
+
+async function carregarRanking(aba) {
+  if(aba !== 'cassino' && aba !== 'sabotadores') {
+    // Abas normais
+    const lista = document.getElementById('lista-ranking');
+    const info = document.getElementById('rank-reset-info');
+    lista.innerHTML='<div style="text-align:center;padding:1rem;color:var(--text2)">Carregando...</div>';
+    try{
+      let snap;
+      if(aba === 'alltime'){
+        if(info) info.textContent='🏆 Maior total ganho de todos os tempos';
+        snap = await db.collection('usuarios').orderBy('totalGanho','desc').limit(10).get();
+      } else {
+        const semana = getSemanaAtual();
+        if(info) info.textContent='📅 Reseta em '+getProximoReset()+' | Semana de '+semana;
+        snap = await db.collection('ranking_semanal').doc(semana).collection('scores').orderBy('totalGanho','desc').limit(10).get();
+      }
+      lista.innerHTML='';
+      if(snap.empty){lista.innerHTML='<div style="color:var(--text3);text-align:center;padding:1rem">Nenhum jogador ainda!</div>';return;}
+      const medals=['🥇','🥈','🥉'];
+      snap.docs.forEach((doc,i)=>{
+        const d=doc.data();const div=document.createElement('div');div.className='ranking-item';
+        const nickClicavel = d.nickname ? `<span style="cursor:pointer;color:var(--text);text-decoration:underline dotted" onclick="verPerfilPorNick('${d.nickname}')">${d.nickname}</span>` : 'Anônimo';
+        div.innerHTML=`<div style="font-size:16px;min-width:24px">${medals[i]||'#'+(i+1)}</div><div style="font-size:16px">${d.avatar||'🧑‍💼'}</div><div style="flex:1;font-size:13px">${nickClicavel}</div><div style="font-size:13px;color:var(--green);font-weight:500">${fmt(d.totalGanho||0)}</div>`;
+        lista.appendChild(div);
+      });
+    }catch(e){lista.innerHTML='<div style="color:var(--red);text-align:center;padding:1rem">Erro ao carregar.</div>';}
+    return;
+  }
+  if(aba === 'cassino') {
+    const lista = document.getElementById('lista-ranking');
+    const info = document.getElementById('rank-reset-info');
+    lista.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--text2)">Carregando...</div>';
+    try {
+      const snap = await db.collection('usuarios').orderBy('cassinoGanhos','desc').limit(10).get();
+      lista.innerHTML = '';
+      if(snap.empty){ lista.innerHTML='<div style="color:var(--text3);text-align:center;padding:1rem">Nenhum dado ainda!</div>'; return; }
+      const medals=['🥇','🥈','🥉'];
+      snap.docs.forEach((doc,i)=>{
+        const d=doc.data();const div=document.createElement('div');div.className='ranking-item';
+        div.innerHTML=`<div style="font-size:16px;min-width:24px">${medals[i]||'#'+(i+1)}</div><div style="font-size:16px">${d.avatar||'🧑‍💼'}</div><div style="flex:1;font-size:13px;color:var(--text)">${d.nickname||'Anônimo'}</div><div style="font-size:13px;color:var(--gold);font-weight:500">${fmt(d.cassinoGanhos||0)}</div>`;
+        lista.appendChild(div);
+      });
+    } catch(e){ lista.innerHTML='<div style="color:var(--red);text-align:center">Erro ao carregar.</div>'; }
+    return;
+  }
+  _carregarRanking_orig(aba);
+}
+
+// Salvar stats de cassino no Firebase periodicamente
+async function salvarStatsCassino() {
+  if(!currentUser || semConta) return;
+  try {
+    await db.collection('usuarios').doc(currentUser.uid).set({
+      cassinoGanhos: G.cassinoEstatisticas?.ganhos||0,
+    }, {merge:true});
+  } catch(e){}
+}
 
 
 </script>
