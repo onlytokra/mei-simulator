@@ -205,6 +205,24 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   .subaba{font-size:12px;color:var(--text2);padding:7px 12px;cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap;transition:color 0.15s,border-color 0.15s;}
   .subaba:hover{color:var(--text);}
   .subaba.ativo{color:var(--green);border-bottom-color:var(--green);font-weight:500;}
+
+  /* TOOLTIP AJUDA */
+  .ajuda-btn{background:none;border:1px solid var(--border);border-radius:50%;width:20px;height:20px;font-size:11px;color:var(--text3);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-left:6px;transition:all 0.15s;}
+  .ajuda-btn:hover{border-color:var(--green);color:var(--green);}
+  .ajuda-tooltip{position:fixed;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:0.75rem 1rem;font-size:12px;color:var(--text2);z-index:99999;max-width:260px;line-height:1.6;box-shadow:0 4px 16px rgba(0,0,0,0.4);display:none;}
+  .ajuda-tooltip.visivel{display:block;animation:slide-in 0.2s ease;}
+
+  /* PERFIL NO TOPO */
+  .perfil-topo{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:8px 14px;margin-bottom:1rem;cursor:pointer;transition:border-color 0.15s;}
+  .perfil-topo:hover{border-color:var(--green);}
+  .perfil-topo-avatar{font-size:26px;position:relative;}
+  .perfil-topo-info{flex:1;}
+  .perfil-topo-nick{font-size:14px;font-weight:500;color:var(--text);}
+  .perfil-topo-sub{font-size:11px;color:var(--text2);margin-top:1px;}
+
+  /* MÚSICA */
+  .musica-bar{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;margin-bottom:0.75rem;font-size:12px;color:var(--text2);}
+  .musica-bar button{background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;}
 </style>
 </head>
 <body>
@@ -306,24 +324,34 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   <div class="modal">
     <div class="modal-titulo">📋 Atualizações</div>
     <div style="font-size:12px;color:var(--text2);line-height:1.9;margin-top:0.5rem">
+      <div style="color:var(--green);font-weight:500">v5.0.0 — Perfis & Estilo</div>
+      • Perfis públicos com busca por nickname<br>
+      • Nicks clicáveis no ranking<br>
+      • Molduras animadas do avatar (chamas, diamante...)<br>
+      • Banners de perfil personalizáveis<br>
+      • Bio/frase customizada no perfil<br>
+      • Música de fundo lo-fi brasileira<br>
+      • Menu reorganizado em grupos com subabas<br>
+      • Botão de perfil visível no topo<br>
+      • Fiscalização menos frequente e intrusiva<br><br>
+      <div style="color:var(--green);font-weight:500">v4.5.0 — Expansão Econômica</div>
+      • Imóveis pra comprar e alugar<br>
+      • Exportação com câmbio real via API<br>
+      • Memecoins com pump e dump<br>
+      • Cassino brasileiro (caça-níquel, roleta, bicho)<br>
+      • Troféus, títulos e temas visuais na loja<br>
+      • Sabotagem entre jogadores<br>
+      • Monopólio de setores<br>
+      • Ranking duplo: All Time + Semanal<br>
+      • Rebalanceamento geral de ganhos<br><br>
       <div style="color:var(--green);font-weight:500">v4.0.0 — Social & Caos</div>
-      • Combo de cliques com multiplicador crescente<br>
-      • Conquistas secretas — descubra você mesmo!<br>
-      • Mercado negro com risco de fiscalização<br>
-      • BrazilCoin — criptomoeda caótica brasileira<br>
-      • Dividendos passivos das ações na bolsa<br>
-      • Leilão de negócios exclusivos<br>
-      • Guilds/Clãs com objetivos coletivos<br>
-      • Presente pra amigos pelo nickname<br>
-      • Chat global em tempo real<br>
-      • Avatar do empresário personalizável<br><br>
-      <div style="color:var(--green);font-weight:500">v3.0.0 — Firebase</div>
-      • Login/registro, progresso na nuvem, ranking real<br>
-      • Árvore de habilidades, franquias, sócio secreto<br>
-      • Bolsa de valores, seguro, IR, inflação, bairros<br><br>
-      <div style="color:var(--green);font-weight:500">v2.0.0 / v1.0.0</div>
-      • Missões, desafio, empréstimo, reputação, eventos<br>
-      • 12 negócios, gerentes, upgrades<br>
+      • Combo de cliques, conquistas secretas<br>
+      • Mercado negro, BrazilCoin, dividendos<br>
+      • Guilds, chat global, presente pra amigos<br>
+      • 40 avatares em 3 categorias<br><br>
+      <div style="color:var(--green);font-weight:500">v3.0.0 / v2.0.0 / v1.0.0</div>
+      • Login Firebase, ranking, habilidades, bolsa<br>
+      • 12 negócios, missões, reputação, eventos<br>
     </div>
     <button class="modal-btn secondary" style="margin-top:1rem" onclick="fecharModal('modal-patch')">Fechar</button>
   </div>
@@ -464,9 +492,26 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
     <div id="liga-atual" style="margin-top:4px"></div>
   </div>
 
-  <div class="user-info-bar">
-    <div style="font-size:13px;color:var(--text)">👤 <span id="user-nick-bar"></span> <span id="guild-badge" style="font-size:11px;color:var(--purple)"></span></div>
-    <div class="sync-status" id="sync-status">⏳ Sincronizando...</div>
+  <!-- PERFIL NO TOPO -->
+  <div class="perfil-topo" onclick="abrirMeuPerfil()">
+    <div class="perfil-topo-avatar">
+      <span id="avatar-topo">🧑‍💼</span>
+    </div>
+    <div class="perfil-topo-info">
+      <div class="perfil-topo-nick" id="user-nick-bar">Carregando...</div>
+      <div class="perfil-topo-sub"><span id="guild-badge" style="color:var(--purple)"></span><span id="titulo-topo" style="color:var(--gold)"></span></div>
+    </div>
+    <div style="font-size:11px;color:var(--green)">Ver perfil →</div>
+  </div>
+
+  <!-- BARRA DE MÚSICA -->
+  <div class="musica-bar" id="musica-bar">
+    <span>🎵</span>
+    <span style="flex:1" id="musica-nome">Lo-fi Brasileiro — Chill Beats</span>
+    <button onclick="toggleMusica()" id="btn-musica">▶️</button>
+    <button onclick="mudarMusica(-1)">⏮</button>
+    <button onclick="mudarMusica(1)">⏭</button>
+    <div class="sync-status" id="sync-status" style="margin-left:4px">⏳</div>
   </div>
 
   <!-- XP BAR -->
@@ -556,23 +601,23 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
     <button class="subaba " onclick="trocarTab('funcionarios',this,'negocios')">👷 Equipe</button>
     <button class="subaba " onclick="trocarTab('habilidades',this,'negocios')">🌳 Talentos</button>
   </div>
-  <div id="tab-negocios" class="tab-content ativo"><div id="lista-negocios"></div></div>
-  <div id="tab-upgrades" class="tab-content"><div id="lista-upgrades"></div></div>
-  <div id="tab-gerentes" class="tab-content"><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Gerentes dobram produção.</p><div id="lista-gerentes"></div></div>
-  <div id="tab-funcionarios" class="tab-content"><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Bônus globais.</p><div id="lista-funcionarios"></div></div>
-  <div id="tab-habilidades" class="tab-content"><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Distribua pontos de talento.</p><div id="lista-habilidades"></div></div>
+  <div id="tab-negocios" class="tab-content ativo"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('negocios',this)">?</button></div><div id="lista-negocios"></div></div>
+  <div id="tab-upgrades" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('upgrades',this)">?</button></div><div id="lista-upgrades"></div></div>
+  <div id="tab-gerentes" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('gerentes',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Gerentes dobram produção.</p><div id="lista-gerentes"></div></div>
+  <div id="tab-funcionarios" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('funcionarios',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Bônus globais.</p><div id="lista-funcionarios"></div></div>
+  <div id="tab-habilidades" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('habilidades',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Distribua pontos de talento.</p><div id="lista-habilidades"></div></div>
   <div class="subabas-bar" id="subabas-extra" style="display:none">
     <button class="subaba ativo" onclick="trocarTab('missoes',this,'extra')">📋 Missões</button>
     <button class="subaba " onclick="trocarTab('historico',this,'extra')">📰 Histórico</button>
     <button class="subaba " onclick="trocarTab('stats',this,'extra')">📊 Stats</button>
   </div>
-  <div id="tab-missoes" class="tab-content"><div id="lista-missoes"></div></div>
+  <div id="tab-missoes" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('missoes',this)">?</button></div><div id="lista-missoes"></div></div>
   <div class="subabas-bar" id="subabas-mundo" style="display:none">
     <button class="subaba ativo" onclick="trocarTab('mapa',this,'mundo')">🗺️ Bairros</button>
     <button class="subaba " onclick="trocarTab('exportacao',this,'mundo')">🌍 Exportação</button>
     <button class="subaba " onclick="trocarTab('mercado',this,'mundo')">🕵️ Mercado Negro</button>
   </div>
-  <div id="tab-mapa" class="tab-content"><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Clique para expandir.</p><div class="mapa-city" id="mapa-bairros"></div><div id="mapa-detalhes"></div></div>
+  <div id="tab-mapa" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('mapa',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Clique para expandir.</p><div class="mapa-city" id="mapa-bairros"></div><div id="mapa-detalhes"></div></div>
   <div class="subabas-bar" id="subabas-financas" style="display:none">
     <button class="subaba ativo" onclick="trocarTab('bolsa',this,'financas')">📈 Bolsa</button>
     <button class="subaba " onclick="trocarTab('memecoins',this,'financas')">🐸 Memecoins</button>
@@ -580,31 +625,31 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
     <button class="subaba " onclick="trocarTab('banco',this,'financas')">🏦 Banco</button>
     <button class="subaba " onclick="trocarTab('cassino',this,'financas')">🎰 Cassino</button>
   </div>
-  <div id="tab-bolsa" class="tab-content"><p style="font-size:12px;color:var(--text2);margin-bottom:0.5rem">Preços atualizam a cada 10s. Dividendos pagos a cada minuto.</p><div id="lista-bolsa"></div></div>
-  <div id="tab-imoveis" class="tab-content"><div id="imoveis-content"></div></div>
-  <div id="tab-exportacao" class="tab-content"><div id="exportacao-content"></div></div>
-  <div id="tab-memecoins" class="tab-content"><div id="memecoins-content"></div></div>
-  <div id="tab-cassino" class="tab-content"><div id="cassino-content"></div></div>
+  <div id="tab-bolsa" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('bolsa',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.5rem">Preços atualizam a cada 10s. Dividendos pagos a cada minuto.</p><div id="lista-bolsa"></div></div>
+  <div id="tab-imoveis" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('imoveis',this)">?</button></div><div id="imoveis-content"></div></div>
+  <div id="tab-exportacao" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('exportacao',this)">?</button></div><div id="exportacao-content"></div></div>
+  <div id="tab-memecoins" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('memecoins',this)">?</button></div><div id="memecoins-content"></div></div>
+  <div id="tab-cassino" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('cassino',this)">?</button></div><div id="cassino-content"></div></div>
   <div class="subabas-bar" id="subabas-social-grp" style="display:none">
     <button class="subaba ativo" onclick="trocarTab('social',this,'social-grp')">👑 Perfil</button>
     <button class="subaba " onclick="trocarTab('guilds',this,'social-grp')">🏰 Guild</button>
     <button class="subaba " onclick="trocarTab('chat',this,'social-grp')">💬 Chat</button>
     <button class="subaba " onclick="trocarTab('loja',this,'social-grp')">🛍️ Loja</button>
   </div>
-  <div id="tab-social" class="tab-content"><div id="social-content"></div></div>
-  <div id="tab-loja" class="tab-content"><div id="loja-content"></div></div>
-  <div id="tab-mercado" class="tab-content"><p style="font-size:12px;color:var(--red);margin-bottom:0.75rem">⚠️ Mercado negro — alto risco, alta recompensa. Pode atrair fiscalização!</p><div id="lista-mercado"></div></div>
-  <div id="tab-banco" class="tab-content"><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Empréstimos e seguro.</p><div id="lista-banco"></div></div>
-  <div id="tab-guilds" class="tab-content"><div id="guild-content"></div></div>
-  <div id="tab-chat" class="tab-content">
+  <div id="tab-social" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('social',this)">?</button></div><div id="social-content"></div></div>
+  <div id="tab-loja" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('loja',this)">?</button></div><div id="loja-content"></div></div>
+  <div id="tab-mercado" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('mercado',this)">?</button></div><p style="font-size:12px;color:var(--red);margin-bottom:0.75rem">⚠️ Mercado negro — alto risco, alta recompensa. Pode atrair fiscalização!</p><div id="lista-mercado"></div></div>
+  <div id="tab-banco" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('banco',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Empréstimos e seguro.</p><div id="lista-banco"></div></div>
+  <div id="tab-guilds" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('guilds',this)">?</button></div><div id="guild-content"></div></div>
+  <div id="tab-chat" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('chat',this)">?</button></div>
     <div class="chat-box" id="chat-box"></div>
     <div class="chat-input-row">
       <input type="text" id="chat-input" placeholder="Digite sua mensagem..." maxlength="100" style="margin-bottom:0">
       <button class="btn-small" style="color:var(--green);border-color:var(--green)" onclick="enviarChat()">Enviar</button>
     </div>
   </div>
-  <div id="tab-historico" class="tab-content"><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Últimos 20 eventos.</p><div id="lista-historico"></div></div>
-  <div id="tab-stats" class="tab-content"><div id="stats-content"></div></div>
+  <div id="tab-historico" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('historico',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Últimos 20 eventos.</p><div id="lista-historico"></div></div>
+  <div id="tab-stats" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('stats',this)">?</button></div><div id="stats-content"></div></div>
 
   <div style="text-align:center;padding:1.5rem 0 0.5rem;border-top:1px solid var(--border);margin-top:1.5rem">
     <div style="font-size:12px;color:var(--text3)">Criado por</div>
@@ -799,7 +844,7 @@ const G={
   ],
   eventoPool:[
     {txt:'☔ Chuva! -30% por 10s',tipo:'ruim',efeito:'chuva',dur:10},
-    {txt:'🕵️ Fiscalização!',tipo:'ruim',efeito:'fiscalizacao'},
+    {txt:'⚡ Conta de luz extra! -R$200',tipo:'ruim',efeito:'multa',val:200},
     {txt:'⚡ Conta de luz! -R$500',tipo:'ruim',efeito:'multa',val:500},
     {txt:'📈 Black Friday! 2x por 15s',tipo:'bom',efeito:'boost',mult:2,dur:15},
     {txt:'🏆 Copa! 2x por 12s',tipo:'bom',efeito:'boost',mult:2,dur:12},
@@ -1349,6 +1394,7 @@ function jogarSemConta(){
     document.getElementById('user-nick-bar').textContent='Jogador Local';
     document.getElementById('sync-status').textContent='💾 Local';
     document.getElementById('avatar-display').textContent=G.avatar||'🧑‍💼';
+  atualizarPerfilTopo();
     gerarMissoes();iniciarLoop();
   }catch(e){
     console.error('Erro jogarSemConta:', e);
@@ -1902,7 +1948,7 @@ function dispararEvento(){
   G.historico.push({txt:ev.txt,tipo:ev.tipo,hora});if(G.historico.length>20)G.historico.shift();
   atualizarMissoes('evento');
   if(G.seguroAtivo&&ev.tipo==='ruim'&&ev.efeito!=='socio'){addEventoBox({txt:'🛡️ Bloqueado pelo seguro!',tipo:'bom'});return;}
-  if(ev.efeito==='fiscalizacao'){iniciarFiscalizacao();return;}
+  if(ev.efeito==='fiscalizacao'){const multa=calcRPS()*10;G.dinheiro=Math.max(0,G.dinheiro-multa);mostrarNotif('🕵️ Fiscalização! Multa: -'+fmt(multa));shakeTela();return;}
   if(ev.efeito==='socio'){document.getElementById('socio-desc').textContent='Cara = dobra, coroa = perde tudo!';document.getElementById('socio-moeda').textContent='🪙';document.getElementById('socio-btns').innerHTML='<button class="modal-btn gold" onclick="jogarSocio()">🤑 Tentar!</button><button class="modal-btn secondary" onclick="fecharModal(\'modal-socio\')">😅 Recusar</button>';abrirModal('modal-socio');return;}
   if(ev.efeito==='leilao'){iniciarLeilao();return;}
   if(ev.efeito==='vip'){const temM=FUNCIONARIOS.find(f=>f.id==='marqueteiro'&&f.contratado);const b=calcRPS()*30*(temM?2:1);G.dinheiro+=b;G.totalGanho+=b;mostrarNotif('⭐ VIP! +'+fmt(b));spawnMoedas();addEventoBox(ev);return;}
@@ -2211,7 +2257,7 @@ function loop(now){
   tickMemecoins(dt);
 
   if(Math.floor(G.tick)%3===0&&Math.floor(G.tick)!==Math.floor(G.tick-dt)){renderDinheiro();renderNegocios();checarConquistas();atualizarMissoes();}
-  if(Math.floor(G.tick)%25===0&&Math.floor(G.tick)!==Math.floor(G.tick-dt)){if(G.negocios.some(n=>n.qtd>0))dispararEvento();}
+  if(Math.floor(G.tick)%60===0&&Math.floor(G.tick)!==Math.floor(G.tick-dt)){if(G.negocios.some(n=>n.qtd>0))dispararEvento();}
 
   // Guild contribuição passiva
   if(Math.floor(G.tick)%60===0&&Math.floor(G.tick)!==Math.floor(G.tick-dt)){if(G.guildId)contribuirGuild(calcRPS()*60*0.01);}
@@ -3789,6 +3835,7 @@ async function buscarJogador() {
 
 async function verPerfilPorNick(nick) {
   try {
+    fecharModal('modal-ranking');
     const snap = await db.collection('usuarios').where('nickname', '==', nick).limit(1).get();
     if (!snap.empty) verPerfilPorUID(snap.docs[0].id, snap.docs[0].data());
     else mostrarNotif('Jogador não encontrado!');
@@ -3887,6 +3934,148 @@ function abrirSabotagem(nick) {
     if (input) { input.value = nick; input.focus(); }
     document.getElementById('tab-social')?.scrollIntoView({behavior:'smooth'});
   }, 200);
+}
+
+
+// ===== MEU PERFIL =====
+function abrirMeuPerfil() {
+  if (!currentUser && !semConta) { mostrarNotif('Faça login pra ver seu perfil!'); return; }
+  abrirModal('modal-perfil-publico');
+  const el = document.getElementById('perfil-publico-content');
+  el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text2)">Carregando...</div>';
+
+  const liga = getLigaPorTotal(G.totalGanho);
+  const trofDisplay = (G.trofeus||[]).length > 0 ? G.trofeus.map(t=>t.icon).join(' ') : '—';
+  const negocios = G.negocios.filter(n=>n.qtd>0).length;
+  const banner = BANNERS_LOJA.find(b=>b.id===(G.banner||'nenhum'));
+  const moldura = G.moldura||'nenhuma';
+
+  el.innerHTML = `
+    <div class="perfil-modal-card">
+      <div class="perfil-banner" style="background:${banner?.cor||'var(--bg3)'}">
+        <div class="perfil-avatar-wrap">
+          <div class="${moldura!=='nenhuma'?'moldura-'+moldura:''}" style="font-size:36px">${G.avatar||'🧑‍💼'}</div>
+        </div>
+      </div>
+      <div class="perfil-info">
+        <div class="perfil-nome">${G.nickname||'Jogador'}</div>
+        ${G.titulo?`<div class="perfil-titulo">${G.titulo}</div>`:''}
+        ${G.bio?`<div class="perfil-bio">"${G.bio}"</div>`:''}
+        ${G.guildNome?`<div style="font-size:11px;color:var(--purple);margin-top:4px">🏰 ${G.guildNome}</div>`:''}
+        <div style="font-size:20px;margin-top:8px">${trofDisplay}</div>
+        <div class="perfil-stats">
+          <div class="perfil-stat"><div class="perfil-stat-val">${liga.icon} ${liga.nome}</div><div class="perfil-stat-label">Liga</div></div>
+          <div class="perfil-stat"><div class="perfil-stat-val">${fmt(G.totalGanho)}</div><div class="perfil-stat-label">Total ganho</div></div>
+          <div class="perfil-stat"><div class="perfil-stat-val">${negocios}</div><div class="perfil-stat-label">Negócios</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:12px;color:var(--text3)">Este é o seu perfil público</div>
+  `;
+}
+
+// ===== MÚSICA DE FUNDO =====
+const MUSICAS = [
+  {nome:'Lo-fi Brasileiro', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+  {nome:'Bossa Nova Chill', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'},
+  {nome:'Samba Instrumental', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'},
+];
+
+let musicaIdx = 0;
+let musicaAudio = null;
+let musicaTocando = false;
+
+function iniciarMusica() {
+  if (!musicaAudio) {
+    musicaAudio = new Audio();
+    musicaAudio.volume = 0.25;
+    musicaAudio.loop = true;
+    musicaAudio.src = MUSICAS[musicaIdx].url;
+    musicaAudio.onended = () => mudarMusica(1);
+  }
+}
+
+function toggleMusica() {
+  iniciarMusica();
+  const btn = document.getElementById('btn-musica');
+  if (musicaTocando) {
+    musicaAudio.pause();
+    musicaTocando = false;
+    if (btn) btn.textContent = '▶️';
+  } else {
+    musicaAudio.play().catch(()=>{});
+    musicaTocando = true;
+    if (btn) btn.textContent = '⏸️';
+  }
+}
+
+function mudarMusica(dir) {
+  musicaIdx = (musicaIdx + dir + MUSICAS.length) % MUSICAS.length;
+  const nome = document.getElementById('musica-nome');
+  const btn = document.getElementById('btn-musica');
+  if (nome) nome.textContent = MUSICAS[musicaIdx].nome;
+  if (musicaAudio) {
+    musicaAudio.src = MUSICAS[musicaIdx].url;
+    if (musicaTocando) musicaAudio.play().catch(()=>{});
+  }
+}
+
+// ===== TOOLTIPS DE AJUDA =====
+const AJUDAS = {
+  negocios: 'Compre negócios pra gerar renda automática. Quanto mais unidades, mais dinheiro por segundo!',
+  upgrades: 'Melhorias permanentes pra cada negócio. Aumentam a produção significativamente.',
+  gerentes: 'Gerentes dobram a produção de um negócio específico. Contrate quando puder!',
+  funcionarios: 'Funcionários dão bônus globais: contador reduz impostos, advogado elimina multas...',
+  habilidades: 'Gaste pontos de talento (ganhos ao subir de reputação) pra melhorar habilidades permanentes.',
+  missoes: 'Complete missões diárias pra ganhar bônus de dinheiro. Renovam todo dia à meia-noite.',
+  mapa: 'Expanda pra novos bairros pra multiplicar toda sua renda. Requer reputação mínima.',
+  bolsa: 'Compre ações pra receber dividendos passivos todo minuto. Preços sobem e descem!',
+  memecoins: 'Criptomoedas ultra voláteis. Podem pump 5x ou despencar 90% a qualquer momento!',
+  imoveis: 'Compre imóveis pra receber aluguel todo minuto. O mercado imobiliário flutua.',
+  banco: 'Pegue empréstimos pra acelerar no início. Cuidado com os juros!',
+  cassino: 'Aposte dinheiro nos jogos. Alto risco, alta recompensa. Só jogue o que pode perder!',
+  social: 'Seu perfil público. Equipe moldura, banner e bio. Sabote rivais ou compre monopólios!',
+  guilds: 'Entre em um clã e coopere com outros jogadores pra atingir metas semanais.',
+  chat: 'Converse com todos os jogadores em tempo real!',
+  loja: 'Gaste seu dinheiro em itens cosméticos: troféus, títulos e temas visuais exclusivos.',
+  mercado: 'Negócios ilegais de alto risco. Podem atrair fiscalização mas dão vantagens rápidas.',
+  exportacao: 'Exporte produtos brasileiros pro mundo com câmbio real. Renda extra todo minuto.',
+  missoes: 'Complete 3 missões por dia pra ganhar recompensas. Renovam à meia-noite.',
+  historico: 'Log dos últimos eventos que aconteceram no seu jogo.',
+  stats: 'Estatísticas detalhadas do seu progresso.',
+};
+
+let tooltipAtivo = null;
+
+function mostrarAjuda(aba, btn) {
+  // Fechar se já estiver aberto
+  if (tooltipAtivo) { tooltipAtivo.remove(); tooltipAtivo = null; return; }
+  const txt = AJUDAS[aba];
+  if (!txt) return;
+  const tooltip = document.createElement('div');
+  tooltip.className = 'ajuda-tooltip visivel';
+  tooltip.textContent = txt;
+  const rect = btn.getBoundingClientRect();
+  tooltip.style.top = (rect.bottom + 8) + 'px';
+  tooltip.style.left = Math.max(8, rect.left - 100) + 'px';
+  document.body.appendChild(tooltip);
+  tooltipAtivo = tooltip;
+  setTimeout(() => {
+    document.addEventListener('click', () => { tooltip.remove(); tooltipAtivo = null; }, { once: true });
+  }, 100);
+}
+
+// Atualizar avatar no topo quando muda
+function atualizarPerfilTopo() {
+  const av = document.getElementById('avatar-topo');
+  const nick = document.getElementById('user-nick-bar');
+  const titulo = document.getElementById('titulo-topo');
+  if (av) av.textContent = G.avatar || '🧑‍💼';
+  if (nick) nick.textContent = G.nickname || 'Jogador';
+  if (titulo) {
+    if (G.titulo) titulo.textContent = ' · ' + G.titulo;
+    else titulo.textContent = '';
+  }
 }
 
 
