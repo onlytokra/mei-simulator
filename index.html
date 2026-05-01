@@ -223,6 +223,17 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   /* MÚSICA */
   .musica-bar{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;margin-bottom:0.75rem;font-size:12px;color:var(--text2);}
   .musica-bar button{background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;}
+
+  /* EXTRATO */
+  .extrato-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);}
+  .extrato-icon{font-size:18px;min-width:28px;text-align:center;}
+  .extrato-info{flex:1;min-width:0;}
+  .extrato-desc{font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .extrato-hora{font-size:10px;color:var(--text3);margin-top:1px;}
+  .extrato-valor{font-size:13px;font-weight:500;white-space:nowrap;}
+  .extrato-positivo{color:var(--green);}
+  .extrato-negativo{color:var(--red);}
+  .extrato-saldo{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;}
 </style>
 </head>
 <body>
@@ -666,6 +677,7 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
       <button class="btn-small" style="color:var(--green);border-color:var(--green)" onclick="enviarChat()">Enviar</button>
     </div>
   </div>
+  <div id="tab-extrato" class="tab-content"><div id="extrato-content"></div></div>
   <div id="tab-historico" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('historico',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Últimos 20 eventos.</p><div id="lista-historico"></div></div>
   <div id="tab-stats" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('stats',this)">?</button></div><div id="stats-content"></div></div>
 
@@ -814,7 +826,7 @@ const G={
   emprestimo:null,seguroAtivo:false,seguroDuracao:0,seguroTick:0,
   inflacaoMult:1,inflacaoTick:0,impostoTick:0,bolsaTick:0,dividendoTick:0,
   presenteDia:'',presenteStreak:0,
-  historico:[],missoes:[],missaoReset:0,franquias:[],
+  historico:[],extrato:[],missoes:[],missaoReset:0,franquias:[],
   tema:'dark',nickname:'',avatar:'🧑‍💼',
   xp:0,xpNivel:1,
   combo:0,comboTimer:0,
@@ -1473,7 +1485,7 @@ function montarSave(){
     emprestimo:G.emprestimo,seguroAtivo:G.seguroAtivo,seguroDuracao:G.seguroDuracao,seguroTick:G.seguroTick,
     inflacaoMult:G.inflacaoMult,tema:G.tema,nickname:G.nickname,avatar:G.avatar,
     presenteDia:G.presenteDia,presenteStreak:G.presenteStreak,
-    missoes:G.missoes,missaoReset:G.missaoReset,franquias:G.franquias,
+    extrato:G.extrato?.slice(-100)||[],missoes:G.missoes,missaoReset:G.missaoReset,franquias:G.franquias,
     conquistasDesbloqueadas:G.conquistasDesbloqueadas,
     conquistasSecretasDesbloqueadas:G.conquistasSecretasDesbloqueadas,
     upgradesComprados:G.upgradesComprados,
@@ -1511,6 +1523,7 @@ function aplicarSave(s){
   G.inflacaoMult=s.inflacaoMult||1;G.tema=s.tema||'dark';
   G.nickname=s.nickname||G.nickname;G.avatar=s.avatar||'🧑‍💼';
   G.presenteDia=s.presenteDia||'';G.presenteStreak=s.presenteStreak||0;
+  G.extrato=s.extrato||[];
   G.missoes=s.missoes||[];G.missaoReset=s.missaoReset||0;G.franquias=s.franquias||[];
   G.conquistasDesbloqueadas=s.conquistasDesbloqueadas||[];
   G.conquistasSecretasDesbloqueadas=s.conquistasSecretasDesbloqueadas||[];
@@ -1859,6 +1872,7 @@ function comprar(i){
   const n=G.negocios[i];const custo=calcCusto(n);
   if(G.dinheiro<custo){mostrarNotif('Dinheiro insuficiente 😔');return;}
   G.dinheiro-=custo;n.qtd++;G.reputacao+=5;ganharXP(5);
+  registrarExtrato('Comprou '+n.nome, -custo, n.icon);
   if(n.qtd===1)mostrarNotif('Negócio aberto: '+n.icon+' '+n.nome+'!');
   if(n.qtd===20&&!G.franquias.includes(n.id)){G.franquias.push(n.id);n.rps*=1.3;mostrarNotif('🏆 FRANQUIA: '+n.nome+'! +50%!');spawnMoedas();}
   atualizarMissoes();checarConquistas();renderNegocios();renderUpgrades();renderGerentes();
@@ -1915,6 +1929,7 @@ function venderAcao(aid){
 function pegarEmprestimo(val){
   if(G.emprestimo){mostrarNotif('Já tem empréstimo!');return;}
   G.emprestimo={original:val,restante:val*2,juros:0.08};G.dinheiro+=val;
+  registrarExtrato('Empréstimo bancário', val, '🏦');
   mostrarNotif('Empréstimo de '+fmt(val)+'! 💸');renderBanco();
 }
 
@@ -1940,6 +1955,7 @@ function pegarPresente(){
   const r=window._presenteR;if(!r)return;
   if(r.val){G.dinheiro+=r.val;G.totalGanho+=r.val;}
   if(r.boost){G.boostAtivo=r.boost;spawnMoedas();setTimeout(()=>{G.boostAtivo=1;},(r.dur||30)*1000);}
+  if(r.val)registrarExtrato('Presente diário (dia '+G.presenteStreak+')', r.val||0, '🎁');
   G.presenteDia=new Date().toDateString();G.presenteStreak++;
   document.getElementById('presente-box').style.display='none';
   mostrarNotif('🎁 Presente pego! Volte amanhã!');
@@ -2130,7 +2146,7 @@ const MAPA_GRUPOS={
   bolsa:'financas',memecoins:'financas',imoveis:'financas',banco:'financas',cassino:'financas',
   mapa:'mundo',exportacao:'mundo',mercado:'mundo',
   social:'social-grp',guilds:'social-grp',chat:'social-grp',loja:'social-grp',
-  missoes:'extra',historico:'extra',stats:'extra',
+  missoes:'extra',historico:'extra',extrato:'extra',stats:'extra',
 };
 
 const GRUPOS_ABAS = {
@@ -2138,7 +2154,7 @@ const GRUPOS_ABAS = {
   'financas':  [['bolsa','📈 Bolsa'],['memecoins','🐸 Memecoins'],['imoveis','🏠 Imóveis'],['banco','🏦 Banco'],['cassino','🎰 Cassino']],
   'mundo':     [['mapa','🗺️ Bairros'],['exportacao','🌍 Exportação'],['mercado','🕵️ Mercado Negro']],
   'social-grp':[['social','👑 Perfil'],['guilds','🏰 Guild'],['chat','💬 Chat'],['loja','🛍️ Loja']],
-  'extra':     [['missoes','📋 Missões'],['historico','📰 Histórico'],['stats','📊 Stats']],
+  'extra':     [['missoes','📋 Missões'],['historico','📰 Histórico'],['extrato','💳 Extrato'],['stats','📊 Stats']],
 };
 
 function abrirGrupo(grupo){
@@ -2183,6 +2199,7 @@ function renderizarAba(nome){
   else if(nome==='guilds')renderGuilds();
   else if(nome==='chat')iniciarChat();
   else if(nome==='historico')renderHistorico();
+  else if(nome==='extrato')renderExtrato();
   else if(nome==='stats')renderStats();
   else if(nome==='imoveis')renderImoveis();
   else if(nome==='exportacao')renderExportacao();
@@ -2280,7 +2297,7 @@ function loop(now){
   const fatorDivida = G.emprestimo ? 0.75 : 1;
   const pagBase = ganho * fatorDivida;
   const pag=Math.min(pagBase*0.3,G.emprestimo.restante);G.emprestimo.restante-=pag;G.dinheiro-=pag;
-    if(G.emprestimo.restante<=1){G.emprestimo=null;mostrarNotif('Empréstimo quitado! 🎉');}
+    if(G.emprestimo.restante<=1){G.emprestimo=null;registrarExtrato('Empréstimo quitado!',0,'✅');mostrarNotif('Empréstimo quitado! 🎉');}
   }
 
   // Seguro
@@ -2294,6 +2311,7 @@ function loop(now){
   if(G.impostoTick>=300){
     G.impostoTick=0;const temC=FUNCIONARIOS.find(f=>f.id==='contador'&&f.contratado);
     const taxa=temC?0.05:0.10;const imp=G.dinheiro*taxa;G.dinheiro=Math.max(0,G.dinheiro-imp);
+    registrarExtrato('Imposto de Renda ('+(taxa*100)+'%)', -imp, '💸');
     const av=document.getElementById('imposto-aviso');av.textContent='💸 IR: -'+fmt(imp)+' ('+(taxa*100)+'%)';av.style.display='block';
     setTimeout(()=>{av.style.display='none';},4000);
   }
@@ -2311,7 +2329,7 @@ function loop(now){
   if(G.dividendoTick>=60){
     G.dividendoTick=0;
     let total=0;ACOES.forEach(a=>{total+=a.dividendo*a.qtd;});
-    if(total>0){G.dinheiro+=total;G.totalGanho+=total;mostrarNotif('💰 Dividendos: +'+fmt(total));}
+    if(total>0){G.dinheiro+=total;G.totalGanho+=total;registrarExtrato('Dividendos da bolsa',total,'📈');mostrarNotif('💰 Dividendos: +'+fmt(total));}
   }
 
   G.negocios.forEach(n=>{if(n.qtd>0){n.prog+=dt;if(n.prog>=n.ciclo)n.prog=n.prog%n.ciclo;}});
@@ -2483,7 +2501,7 @@ function tickImoveis(dt){
     if(liquido !== 0){
       G.dinheiro += liquido;
       if(liquido > 0) G.totalGanho += liquido;
-      if(totalAluguel > 0) mostrarNotif('🏠 Aluguel recebido: +'+fmt(totalAluguel));
+      if(totalAluguel > 0){ mostrarNotif('🏠 Aluguel recebido: +'+fmt(totalAluguel)); registrarExtrato('Aluguel de imóveis', liquido, '🏠'); }
     }
     // Problema aleatório a cada 5 minutos
     if(Math.random() < 0.15 && IMOVEIS_TIPOS.some(t=>t.comprados.length>0)){
@@ -2623,6 +2641,7 @@ function tickExportacao(dt){
       G.dinheiro += total;
       G.totalGanho += total;
       mostrarNotif('🌍 Exportação: +'+fmt(total));
+      registrarExtrato('Exportação internacional', total, '🌍');
     }
     // Câmbio flutua
     cambioUSD = Math.max(3, Math.min(10, cambioUSD + (Math.random()-0.5)*0.3));
@@ -3397,12 +3416,14 @@ function jogarSlots(aposta) {
         G.totalGanho += ganho;
         G.cassinoEstatisticas.ganhos += ganho;
         G.cassinoEstatisticas.perdas -= aposta;
+        registrarExtrato('Caça-níquel '+(r1===r2&&r2===r3?'JACKPOT':'Par!'), ganho-aposta, '🎰');
         resultado.textContent = `🎉 ${r1===r2&&r2===r3?'JACKPOT!':'Par!'} +${fmt(ganho)} (${mult}x)`;
         resultado.style.color = 'var(--green)';
         SOM.conquista();
         spawnParticulasDinheiro(window.innerWidth/2, 300, 10);
         flashBrilho('#cc9');
       } else {
+        registrarExtrato('Caça-níquel (perdeu)', -aposta, '🎰');
         resultado.textContent = `😢 Perdeu ${fmt(aposta)}. Tente novamente!`;
         resultado.style.color = 'var(--red)';
         SOM.eventoRuim();
@@ -3628,6 +3649,7 @@ async function verificarSabotagens() {
     snap.docs.forEach(async doc => {
       const d = doc.data();
       G.dinheiro = Math.max(0, G.dinheiro - d.penalidade);
+      registrarExtrato('Sabotagem de '+d.de, -d.penalidade, '💣');
       mostrarNotif(`💣 ${d.de} te sabotou! -${fmt(d.penalidade)}`);
       shakeTela(); SOM.fiscalizacao();
       await doc.ref.update({aplicado: true});
@@ -4267,6 +4289,102 @@ function verificarPrimeiroLogin() {
   }
 }
 
+
+// ===== EXTRATO BANCÁRIO =====
+function registrarExtrato(desc, valor, icon='💰') {
+  if (!G.extrato) G.extrato = [];
+  const agora = new Date();
+  const hora = agora.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const data = agora.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit'});
+  G.extrato.push({desc, valor, icon, hora, data, ts: Date.now()});
+  if (G.extrato.length > 100) G.extrato.shift();
+}
+
+function renderExtrato() {
+  const el = document.getElementById('extrato-content');
+  if (!el) return;
+  if (!G.extrato || G.extrato.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text3)">Nenhuma transação ainda.<br>Comece a jogar!</div>';
+    return;
+  }
+
+  // Calcular saldo do dia
+  const hoje = new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit'});
+  const transacoesHoje = G.extrato.filter(t => t.data === hoje);
+  const entradas = transacoesHoje.filter(t => t.valor > 0).reduce((s,t) => s + t.valor, 0);
+  const saidas = transacoesHoje.filter(t => t.valor < 0).reduce((s,t) => s + t.valor, 0);
+
+  let html = `
+    <div style="display:flex;gap:8px;margin-bottom:1rem">
+      <button class="btn-small" id="btn-extrato-tudo" onclick="filtrarExtrato('tudo')" style="color:var(--green);border-color:var(--green)">Tudo</button>
+      <button class="btn-small" id="btn-extrato-entrada" onclick="filtrarExtrato('entrada')">✅ Entradas</button>
+      <button class="btn-small" id="btn-extrato-saida" onclick="filtrarExtrato('saida')">❌ Saídas</button>
+    </div>
+    <div class="extrato-saldo">
+      <div>
+        <div style="font-size:11px;color:var(--text2)">Entradas hoje</div>
+        <div style="font-size:14px;font-weight:500;color:var(--green)">+${fmt(entradas)}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:11px;color:var(--text2)">Saídas hoje</div>
+        <div style="font-size:14px;font-weight:500;color:var(--red)">${fmt(saidas)}</div>
+      </div>
+    </div>
+    <div id="extrato-lista">
+  `;
+
+  const itens = [...G.extrato].reverse();
+  itens.forEach(t => {
+    const pos = t.valor >= 0;
+    html += `
+      <div class="extrato-item">
+        <div class="extrato-icon">${t.icon}</div>
+        <div class="extrato-info">
+          <div class="extrato-desc">${t.desc}</div>
+          <div class="extrato-hora">${t.data} às ${t.hora}</div>
+        </div>
+        <div class="extrato-valor ${pos?'extrato-positivo':'extrato-negativo'}">${pos?'+':''}${fmt(t.valor)}</div>
+      </div>
+    `;
+  });
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function filtrarExtrato(tipo) {
+  const lista = document.getElementById('extrato-lista');
+  if (!lista || !G.extrato) return;
+
+  // Atualizar botões
+  ['tudo','entrada','saida'].forEach(t => {
+    const btn = document.getElementById('btn-extrato-'+t);
+    if (btn) {
+      btn.style.color = t === tipo ? 'var(--green)' : '';
+      btn.style.borderColor = t === tipo ? 'var(--green)' : '';
+    }
+  });
+
+  const itens = [...G.extrato].reverse().filter(t => {
+    if (tipo === 'entrada') return t.valor >= 0;
+    if (tipo === 'saida') return t.valor < 0;
+    return true;
+  });
+
+  lista.innerHTML = itens.map(t => {
+    const pos = t.valor >= 0;
+    return `
+      <div class="extrato-item">
+        <div class="extrato-icon">${t.icon}</div>
+        <div class="extrato-info">
+          <div class="extrato-desc">${t.desc}</div>
+          <div class="extrato-hora">${t.data} às ${t.hora}</div>
+        </div>
+        <div class="extrato-valor ${pos?'extrato-positivo':'extrato-negativo'}">${pos?'+':''}${fmt(t.valor)}</div>
+      </div>
+    `;
+  }).join('');
+}
 
 </script>
 </body>
