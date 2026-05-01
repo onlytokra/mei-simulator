@@ -234,6 +234,51 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   .extrato-positivo{color:var(--green);}
   .extrato-negativo{color:var(--red);}
   .extrato-saldo{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;}
+
+  /* BOTTOM NAV */
+  .bottom-nav{position:sticky;bottom:0;background:var(--bg);border-top:1px solid var(--border);display:flex;z-index:1000;padding:4px 0 8px;}
+  .bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:6px 4px;transition:opacity 0.15s;}
+  .bottom-nav-item .bn-icon{font-size:20px;transition:transform 0.15s;}
+  .bottom-nav-item .bn-label{font-size:10px;color:var(--text3);font-weight:500;transition:color 0.15s;}
+  .bottom-nav-item.ativo .bn-icon{transform:scale(1.15);}
+  .bottom-nav-item.ativo .bn-label{color:var(--green);}
+  .bottom-nav-item.ativo .bn-dot{background:var(--green);}
+  .bn-dot{width:4px;height:4px;border-radius:50%;background:transparent;margin-top:1px;transition:background 0.15s;}
+
+  /* TELAS PRINCIPAIS */
+  .tela{display:none;}
+  .tela.ativa{display:block;}
+
+  /* CARDS DE SEÇÃO */
+  .secao-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1rem;margin-bottom:0.75rem;cursor:pointer;transition:border-color 0.15s;}
+  .secao-card:hover{border-color:var(--border2);}
+  .secao-card.expandido{border-color:var(--green);}
+  .secao-header{display:flex;align-items:center;gap:10px;}
+  .secao-icon{font-size:24px;}
+  .secao-info{flex:1;}
+  .secao-nome{font-size:14px;font-weight:500;color:var(--text);}
+  .secao-desc{font-size:11px;color:var(--text2);margin-top:2px;}
+  .secao-arrow{font-size:16px;color:var(--text3);transition:transform 0.2s;}
+  .secao-card.expandido .secao-arrow{transform:rotate(90deg);}
+  .secao-body{display:none;margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border);}
+  .secao-card.expandido .secao-body{display:block;}
+
+  /* GRID EU */
+  .eu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:0.75rem;}
+  .eu-item{background:var(--bg3);border-radius:10px;padding:0.6rem 0.4rem;text-align:center;cursor:pointer;transition:background 0.15s;}
+  .eu-item:hover{background:var(--border);}
+  .eu-item-icon{font-size:22px;}
+  .eu-item-nome{font-size:10px;color:var(--text2);margin-top:3px;}
+
+  /* SOCIAL LIST */
+  .social-list-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+  .social-list-item:last-child{border-bottom:none;}
+  .social-list-item:hover .social-list-nome{color:var(--green);}
+  .social-list-icon{font-size:22px;min-width:30px;text-align:center;}
+  .social-list-info{flex:1;}
+  .social-list-nome{font-size:13px;font-weight:500;color:var(--text);transition:color 0.15s;}
+  .social-list-desc{font-size:11px;color:var(--text2);margin-top:1px;}
+  .social-list-arrow{font-size:16px;color:var(--text3);}
 </style>
 </head>
 <body>
@@ -521,7 +566,7 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   </div>
 
   <!-- PERFIL NO TOPO -->
-  <div class="perfil-topo" onclick="abrirMeuPerfil()">
+  <div class="perfil-topo" onclick="irParaTela('eu')">
     <div class="perfil-topo-avatar">
       <span id="avatar-topo">🧑‍💼</span>
     </div>
@@ -575,19 +620,19 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
 
   <!-- VITRINE: CASSINO, LOJA E SABOTAGEM -->
   <div class="destaque-grid" style="grid-template-columns:1fr 1fr 1fr">
-    <div class="destaque-card cassino-card" onclick="trocarTab('cassino', document.querySelector('.submenu-btn[onclick*=cassino]')); setTimeout(()=>document.getElementById('tab-cassino').scrollIntoView({behavior:'smooth', block:'start'}), 100)">
+    <div class="destaque-card cassino-card" onclick="scrollParaCassino()">
       <div class="destaque-emojis">🎰🎡🐾</div>
       <div class="destaque-titulo" style="color:#ff6622">Cassino</div>
       <div class="destaque-sub">Caça-níquel, Roleta<br>e Jogo do Bicho</div>
       <div class="destaque-btn" style="background:#cc4400;color:#fff">Jogar agora →</div>
     </div>
-    <div class="destaque-card loja-card" onclick="trocarTab('loja', document.querySelector('.submenu-btn[onclick*=loja]')); setTimeout(()=>document.getElementById('tab-loja').scrollIntoView({behavior:'smooth', block:'start'}), 100)">
+    <div class="destaque-card loja-card" onclick="scrollParaLoja()">
       <div class="destaque-emojis">👑💎🏆</div>
       <div class="destaque-titulo" style="color:var(--gold)">Loja</div>
       <div class="destaque-sub">Troféus, títulos<br>e temas exclusivos</div>
       <div class="destaque-btn" style="background:#886600;color:#fff">Ver itens →</div>
     </div>
-    <div class="destaque-card" style="border-color:#cc2222;background:linear-gradient(135deg,#150000,#250005);cursor:pointer" onclick="trocarTab('social', document.querySelector('.submenu-btn[onclick*=social]')); setTimeout(()=>document.getElementById('tab-social').scrollIntoView({behavior:'smooth', block:'start'}), 100)">
+    <div class="destaque-card" style="border-color:#cc2222;background:linear-gradient(135deg,#150000,#250005);cursor:pointer" onclick="scrollParaSabotagem()">
       <div class="destaque-emojis">💣🕵️💥</div>
       <div class="destaque-titulo" style="color:#ff4444">Sabotagem</div>
       <div class="destaque-sub">Mande fiscalização<br>pro rival!</div>
@@ -611,75 +656,203 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   </div>
   <div id="eventos-box"></div>
 
-  <!-- MENU PRINCIPAL POR GRUPOS -->
-  <div class="menu-grupos">
-    <button class="menu-grupo-btn ativo" id="grp-negocios" onclick="abrirGrupo('negocios')">🏪 Negócios ▾</button>
-    <button class="menu-grupo-btn" id="grp-financas" onclick="abrirGrupo('financas')">💰 Finanças ▾</button>
-    <button class="menu-grupo-btn" id="grp-mundo" onclick="abrirGrupo('mundo')">🌍 Mundo ▾</button>
-    <button class="menu-grupo-btn" id="grp-social-grp" onclick="abrirGrupo('social-grp')">👑 Social ▾</button>
-    <button class="menu-grupo-btn" id="grp-extra" onclick="abrirGrupo('extra')">🎮 Extra ▾</button>
+  <!-- TELAS PRINCIPAIS COM BOTTOM NAV -->
+
+  <!-- TELA: NEGÓCIOS -->
+  <div class="tela ativa" id="tela-negocios">
+    <div id="lista-negocios"></div>
+    <div id="tab-upgrades" style="display:none"><div id="lista-upgrades"></div></div>
+    <div id="tab-gerentes" style="display:none"><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Gerentes dobram produção.</p><div id="lista-gerentes"></div></div>
+    <div id="tab-funcionarios" style="display:none"><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Bônus globais.</p><div id="lista-funcionarios"></div></div>
+    <div id="tab-habilidades" style="display:none"><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Distribua pontos de talento.</p><div id="lista-habilidades"></div></div>
   </div>
 
-  <div style="margin-bottom:0.5rem"></div>
-
-  <div id="grupo-container-negocios" style="display:block">
-  <div class="subabas-bar" id="subabas-negocios">
-    <button class="subaba ativo" onclick="trocarTab('negocios',this,'negocios')">🏪 Negócios</button>
-    <button class="subaba " onclick="trocarTab('upgrades',this,'negocios')">⬆️ Upgrades</button>
-    <button class="subaba " onclick="trocarTab('gerentes',this,'negocios')">👔 Gerentes</button>
-    <button class="subaba " onclick="trocarTab('funcionarios',this,'negocios')">👷 Equipe</button>
-    <button class="subaba " onclick="trocarTab('habilidades',this,'negocios')">🌳 Talentos</button>
-  </div>
-  <div id="tab-negocios" class="tab-content ativo"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('negocios',this)">?</button></div><div id="lista-negocios"></div></div>
-  <div id="tab-upgrades" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('upgrades',this)">?</button></div><div id="lista-upgrades"></div></div>
-  <div id="tab-gerentes" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('gerentes',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Gerentes dobram produção.</p><div id="lista-gerentes"></div></div>
-  <div id="tab-funcionarios" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('funcionarios',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Bônus globais.</p><div id="lista-funcionarios"></div></div>
-  <div id="tab-habilidades" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('habilidades',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Distribua pontos de talento.</p><div id="lista-habilidades"></div></div>
-  <div class="subabas-bar" id="subabas-extra" style="display:none">
-    <button class="subaba ativo" onclick="trocarTab('missoes',this,'extra')">📋 Missões</button>
-    <button class="subaba " onclick="trocarTab('historico',this,'extra')">📰 Histórico</button>
-    <button class="subaba " onclick="trocarTab('stats',this,'extra')">📊 Stats</button>
-  </div>
-  <div id="tab-missoes" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('missoes',this)">?</button></div><div id="lista-missoes"></div></div>
-  <div class="subabas-bar" id="subabas-mundo" style="display:none">
-    <button class="subaba ativo" onclick="trocarTab('mapa',this,'mundo')">🗺️ Bairros</button>
-    <button class="subaba " onclick="trocarTab('exportacao',this,'mundo')">🌍 Exportação</button>
-    <button class="subaba " onclick="trocarTab('mercado',this,'mundo')">🕵️ Mercado Negro</button>
-  </div>
-  <div id="tab-mapa" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('mapa',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Clique para expandir.</p><div class="mapa-city" id="mapa-bairros"></div><div id="mapa-detalhes"></div></div>
-  <div class="subabas-bar" id="subabas-financas" style="display:none">
-    <button class="subaba ativo" onclick="trocarTab('bolsa',this,'financas')">📈 Bolsa</button>
-    <button class="subaba " onclick="trocarTab('memecoins',this,'financas')">🐸 Memecoins</button>
-    <button class="subaba " onclick="trocarTab('imoveis',this,'financas')">🏠 Imóveis</button>
-    <button class="subaba " onclick="trocarTab('banco',this,'financas')">🏦 Banco</button>
-    <button class="subaba " onclick="trocarTab('cassino',this,'financas')">🎰 Cassino</button>
-  </div>
-  <div id="tab-bolsa" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('bolsa',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.5rem">Preços atualizam a cada 10s. Dividendos pagos a cada minuto.</p><div id="lista-bolsa"></div></div>
-  <div id="tab-imoveis" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('imoveis',this)">?</button></div><div id="imoveis-content"></div></div>
-  <div id="tab-exportacao" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('exportacao',this)">?</button></div><div id="exportacao-content"></div></div>
-  <div id="tab-memecoins" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('memecoins',this)">?</button></div><div id="memecoins-content"></div></div>
-  <div id="tab-cassino" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('cassino',this)">?</button></div><div id="cassino-content"></div></div>
-  <div class="subabas-bar" id="subabas-social-grp" style="display:none">
-    <button class="subaba ativo" onclick="trocarTab('social',this,'social-grp')">👑 Perfil</button>
-    <button class="subaba " onclick="trocarTab('guilds',this,'social-grp')">🏰 Guild</button>
-    <button class="subaba " onclick="trocarTab('chat',this,'social-grp')">💬 Chat</button>
-    <button class="subaba " onclick="trocarTab('loja',this,'social-grp')">🛍️ Loja</button>
-  </div>
-  <div id="tab-social" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('social',this)">?</button></div><div id="social-content"></div></div>
-  <div id="tab-loja" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('loja',this)">?</button></div><div id="loja-content"></div></div>
-  <div id="tab-mercado" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('mercado',this)">?</button></div><p style="font-size:12px;color:var(--red);margin-bottom:0.75rem">⚠️ Mercado negro — alto risco, alta recompensa. Pode atrair fiscalização!</p><div id="lista-mercado"></div></div>
-  <div id="tab-banco" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('banco',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Empréstimos e seguro.</p><div id="lista-banco"></div></div>
-  <div id="tab-guilds" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('guilds',this)">?</button></div><div id="guild-content"></div></div>
-  <div id="tab-chat" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('chat',this)">?</button></div>
-    <div class="chat-box" id="chat-box"></div>
-    <div class="chat-input-row">
-      <input type="text" id="chat-input" placeholder="Digite sua mensagem..." maxlength="100" style="margin-bottom:0">
-      <button class="btn-small" style="color:var(--green);border-color:var(--green)" onclick="enviarChat()">Enviar</button>
+  <!-- TELA: FINANÇAS -->
+  <div class="tela" id="tela-financas">
+    <div class="secao-card" id="secao-bolsa" onclick="toggleSecao('bolsa')">
+      <div class="secao-header">
+        <div class="secao-icon">📈</div>
+        <div class="secao-info"><div class="secao-nome">Bolsa de Valores</div><div class="secao-desc">Ações, dividendos e BrazilCoin</div></div>
+        <div class="secao-arrow">›</div>
+      </div>
+      <div class="secao-body" id="body-bolsa"><div id="lista-bolsa"></div></div>
+    </div>
+    <div class="secao-card" id="secao-imoveis" onclick="toggleSecao('imoveis')">
+      <div class="secao-header">
+        <div class="secao-icon">🏠</div>
+        <div class="secao-info"><div class="secao-nome">Imóveis</div><div class="secao-desc">Compre, alugue e venda imóveis</div></div>
+        <div class="secao-arrow">›</div>
+      </div>
+      <div class="secao-body" id="body-imoveis"><div id="imoveis-content"></div></div>
+    </div>
+    <div class="secao-card" id="secao-memecoins" onclick="toggleSecao('memecoins')">
+      <div class="secao-header">
+        <div class="secao-icon">🐸</div>
+        <div class="secao-info"><div class="secao-nome">Memecoins</div><div class="secao-desc">Altamente volátil — pump & dump</div></div>
+        <div class="secao-arrow">›</div>
+      </div>
+      <div class="secao-body" id="body-memecoins"><div id="memecoins-content"></div></div>
+    </div>
+    <div class="secao-card" id="secao-cassino" onclick="toggleSecao('cassino')">
+      <div class="secao-header">
+        <div class="secao-icon">🎰</div>
+        <div class="secao-info"><div class="secao-nome">Cassino</div><div class="secao-desc">Caça-níquel, roleta e jogo do bicho</div></div>
+        <div class="secao-arrow">›</div>
+      </div>
+      <div class="secao-body" id="body-cassino"><div id="cassino-content"></div></div>
+    </div>
+    <div class="secao-card" id="secao-banco" onclick="toggleSecao('banco')">
+      <div class="secao-header">
+        <div class="secao-icon">🏦</div>
+        <div class="secao-info"><div class="secao-nome">Banco</div><div class="secao-desc">Empréstimos e seguro empresarial</div></div>
+        <div class="secao-arrow">›</div>
+      </div>
+      <div class="secao-body" id="body-banco"><div id="lista-banco"></div></div>
     </div>
   </div>
-  <div id="tab-extrato" class="tab-content"><div id="extrato-content"></div></div>
-  <div id="tab-historico" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('historico',this)">?</button></div><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Últimos 20 eventos.</p><div id="lista-historico"></div></div>
-  <div id="tab-stats" class="tab-content"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.5rem"><button class="ajuda-btn" onclick="mostrarAjuda('stats',this)">?</button></div><div id="stats-content"></div></div>
+
+  <!-- TELA: MUNDO -->
+  <div class="tela" id="tela-mundo">
+    <div class="secao-card" id="secao-mapa" onclick="toggleSecao('mapa')">
+      <div class="secao-header">
+        <div class="secao-icon">🗺️</div>
+        <div class="secao-info"><div class="secao-nome">Bairros</div><div class="secao-desc">Expanda pra novos territórios</div></div>
+        <div class="secao-arrow">›</div>
+      </div>
+      <div class="secao-body" id="body-mapa"><div id="mapa-bairros" class="mapa-city"></div><div id="mapa-detalhes"></div></div>
+    </div>
+    <div class="secao-card" id="secao-exportacao" onclick="toggleSecao('exportacao')">
+      <div class="secao-header">
+        <div class="secao-icon">🌍</div>
+        <div class="secao-info"><div class="secao-nome">Exportação</div><div class="secao-desc">Câmbio real — venda pro mundo</div></div>
+        <div class="secao-arrow">›</div>
+      </div>
+      <div class="secao-body" id="body-exportacao"><div id="exportacao-content"></div></div>
+    </div>
+    <div class="secao-card" id="secao-mercado" onclick="toggleSecao('mercado')">
+      <div class="secao-header">
+        <div class="secao-icon">🕵️</div>
+        <div class="secao-info"><div class="secao-nome">Mercado Negro</div><div class="secao-desc" style="color:var(--red)">Alto risco — fiscalização fecha negócios!</div></div>
+        <div class="secao-arrow">›</div>
+      </div>
+      <div class="secao-body" id="body-mercado"><div id="lista-mercado"></div></div>
+    </div>
+  </div>
+
+  <!-- TELA: SOCIAL -->
+  <div class="tela" id="tela-social">
+    <div class="card" style="margin-bottom:0.75rem">
+      <div class="social-list-item" onclick="abrirRanking()">
+        <div class="social-list-icon">🏅</div>
+        <div class="social-list-info"><div class="social-list-nome">Ranking Global</div><div class="social-list-desc">All Time e Semanal</div></div>
+        <div class="social-list-arrow">›</div>
+      </div>
+      <div class="social-list-item" onclick="abrirModal('modal-busca')">
+        <div class="social-list-icon">🔍</div>
+        <div class="social-list-info"><div class="social-list-nome">Buscar Jogador</div><div class="social-list-desc">Ver perfil de qualquer jogador</div></div>
+        <div class="social-list-arrow">›</div>
+      </div>
+      <div class="social-list-item" onclick="trocarSecaoSocial('chat')">
+        <div class="social-list-icon">💬</div>
+        <div class="social-list-info"><div class="social-list-nome">Chat Global</div><div class="social-list-desc">Converse em tempo real</div></div>
+        <div class="social-list-arrow">›</div>
+      </div>
+      <div class="social-list-item" onclick="trocarSecaoSocial('guilds')">
+        <div class="social-list-icon">🏰</div>
+        <div class="social-list-info"><div class="social-list-nome">Guild</div><div class="social-list-desc">Coopere com outros jogadores</div></div>
+        <div class="social-list-arrow">›</div>
+      </div>
+      <div class="social-list-item" onclick="abrirModal('modal-presente-amigo')">
+        <div class="social-list-icon">🎁</div>
+        <div class="social-list-info"><div class="social-list-nome">Mandar Presente</div><div class="social-list-desc">Envie dinheiro a um amigo</div></div>
+        <div class="social-list-arrow">›</div>
+      </div>
+      <div class="social-list-item" style="border-color:var(--red)" onclick="trocarSecaoSocial('sabotagem')">
+        <div class="social-list-icon">💣</div>
+        <div class="social-list-info"><div class="social-list-nome" style="color:var(--red)">Sabotagem</div><div class="social-list-desc">Mande fiscalização ao rival</div></div>
+        <div class="social-list-arrow" style="color:var(--red)">›</div>
+      </div>
+      <div class="social-list-item" style="border-color:var(--gold)" onclick="trocarSecaoSocial('monopolio')">
+        <div class="social-list-icon">👑</div>
+        <div class="social-list-info"><div class="social-list-nome" style="color:var(--gold)">Monopólio</div><div class="social-list-desc">Domine um setor inteiro</div></div>
+        <div class="social-list-arrow" style="color:var(--gold)">›</div>
+      </div>
+    </div>
+    <!-- Sub-conteúdo social -->
+    <div id="social-sub-content"></div>
+  </div>
+
+  <!-- TELA: EU -->
+  <div class="tela" id="tela-eu">
+    <!-- Perfil resumido -->
+    <div id="eu-perfil-card" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:0.75rem;">
+      <div id="eu-banner" style="height:60px;background:var(--bg3)"></div>
+      <div style="padding:0 1rem 1rem;margin-top:-24px;text-align:center">
+        <div id="eu-avatar-wrap" style="font-size:40px;background:var(--bg2);border-radius:50%;width:56px;height:56px;display:inline-flex;align-items:center;justify-content:center;border:3px solid var(--border2);margin-bottom:4px">🧑‍💼</div>
+        <div style="font-size:15px;font-weight:500;color:var(--text)" id="eu-nome">Carregando...</div>
+        <div style="font-size:12px;color:var(--gold);margin-top:2px" id="eu-titulo-display"></div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px;font-style:italic" id="eu-bio-display"></div>
+        <div style="font-size:18px;margin-top:6px" id="eu-trofeus-display"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px">
+          <div style="background:var(--bg3);border-radius:8px;padding:6px;text-align:center">
+            <div style="font-size:13px;font-weight:500;color:var(--text)" id="eu-liga-display">🥉</div>
+            <div style="font-size:10px;color:var(--text2)">Liga</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:8px;padding:6px;text-align:center">
+            <div style="font-size:13px;font-weight:500;color:var(--green)" id="eu-total-display">R$0</div>
+            <div style="font-size:10px;color:var(--text2)">Total ganho</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:8px;padding:6px;text-align:center">
+            <div style="font-size:13px;font-weight:500;color:var(--blue)" id="eu-nivel-display">Nv.1</div>
+            <div style="font-size:10px;color:var(--text2)">Nível</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Grid de opções -->
+    <div class="eu-grid">
+      <div class="eu-item" onclick="abrirConquistas()"><div class="eu-item-icon">🏆</div><div class="eu-item-nome">Conquistas</div></div>
+      <div class="eu-item" onclick="trocarSecaoEu('loja')"><div class="eu-item-icon">🛍️</div><div class="eu-item-nome">Loja</div></div>
+      <div class="eu-item" onclick="abrirAvatarModal()"><div class="eu-item-icon">🎨</div><div class="eu-item-nome">Avatar</div></div>
+      <div class="eu-item" onclick="trocarSecaoEu('molduras')"><div class="eu-item-icon">✨</div><div class="eu-item-nome">Molduras</div></div>
+      <div class="eu-item" onclick="trocarSecaoEu('missoes')"><div class="eu-item-icon">📋</div><div class="eu-item-nome">Missões</div></div>
+      <div class="eu-item" onclick="trocarSecaoEu('extrato')"><div class="eu-item-icon">💳</div><div class="eu-item-nome">Extrato</div></div>
+      <div class="eu-item" onclick="trocarSecaoEu('stats')"><div class="eu-item-icon">📊</div><div class="eu-item-nome">Stats</div></div>
+      <div class="eu-item" onclick="trocarSecaoEu('historico')"><div class="eu-item-icon">📰</div><div class="eu-item-nome">Histórico</div></div>
+    </div>
+    <!-- Sub-conteúdo eu -->
+    <div id="eu-sub-content" style="margin-top:0.75rem"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="bottom-nav-item ativo" id="bn-negocios" onclick="irParaTela('negocios')">
+      <div class="bn-icon">🏪</div>
+      <div class="bn-label">Negócios</div>
+      <div class="bn-dot"></div>
+    </div>
+    <div class="bottom-nav-item" id="bn-financas" onclick="irParaTela('financas')">
+      <div class="bn-icon">💰</div>
+      <div class="bn-label">Finanças</div>
+      <div class="bn-dot"></div>
+    </div>
+    <div class="bottom-nav-item" id="bn-mundo" onclick="irParaTela('mundo')">
+      <div class="bn-icon">🌍</div>
+      <div class="bn-label">Mundo</div>
+      <div class="bn-dot"></div>
+    </div>
+    <div class="bottom-nav-item" id="bn-social" onclick="irParaTela('social')">
+      <div class="bn-icon">👥</div>
+      <div class="bn-label">Social</div>
+      <div class="bn-dot"></div>
+    </div>
+    <div class="bottom-nav-item" id="bn-eu" onclick="irParaTela('eu')">
+      <div class="bn-icon">👤</div>
+      <div class="bn-label">Eu</div>
+      <div class="bn-dot"></div>
+    </div>
+  </div>
+
 
   <div style="text-align:center;padding:1.5rem 0 0.5rem;border-top:1px solid var(--border);margin-top:1.5rem">
     <div style="font-size:12px;color:var(--text3)">Criado por</div>
@@ -2209,50 +2382,6 @@ function renderizarAba(nome){
   else if(nome==='loja')renderLoja();
 }
 
-function trocarTab(nome,btn,grupoForce){
-  // Esconder todos os tabs
-  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('ativo'));
-  const tabEl=document.getElementById('tab-'+nome);
-  if(tabEl) tabEl.classList.add('ativo');
-
-  // Atualizar subabas ativas
-  const grupo=grupoForce||MAPA_GRUPOS[nome];
-  if(grupo){
-    // Garantir grupo certo ativo
-    document.querySelectorAll('.menu-grupo-btn').forEach(b=>b.classList.remove('ativo'));
-    const grpBtn=document.getElementById('grp-'+grupo);
-    if(grpBtn) grpBtn.classList.add('ativo');
-    // Mostrar subabas corretas
-    document.querySelectorAll('.subabas-bar').forEach(s=>s.style.display='none');
-    const subabas=document.getElementById('subabas-'+grupo);
-    if(subabas) subabas.style.display='flex';
-    // Marcar subaba ativa
-    if(subabas){
-      subabas.querySelectorAll('.subaba').forEach(b=>{
-        b.classList.toggle('ativo', b.getAttribute('onclick')?.includes("'"+nome+"'"));
-      });
-    }
-  }
-  if(nome==='upgrades')renderUpgrades();
-  if(nome==='gerentes')renderGerentes();
-  if(nome==='funcionarios')renderFuncionarios();
-  if(nome==='habilidades')renderHabilidades();
-  if(nome==='missoes')renderMissoes();
-  if(nome==='mapa')renderMapa();
-  if(nome==='bolsa')renderBolsa();
-  if(nome==='mercado')renderMercado();
-  if(nome==='banco')renderBanco();
-  if(nome==='guilds')renderGuilds();
-  if(nome==='chat')iniciarChat();
-  if(nome==='historico')renderHistorico();
-  if(nome==='stats')renderStats();
-  if(nome==='imoveis')renderImoveis();
-  if(nome==='exportacao')renderExportacao();
-  if(nome==='memecoins')renderMemecoins();
-  if(nome==='cassino')renderCassino();
-  if(nome==='social')renderSocial();
-  if(nome==='loja')renderLoja();
-}
 
 document.getElementById('btn-clique').addEventListener('click',(e)=>{
   comboContador++;comboTimer=COMBO_TIMEOUT;
@@ -2274,6 +2403,7 @@ let lastTime=performance.now();
 
 function iniciarLoop(){
   renderDinheiro();renderNegocios();
+  setTimeout(inicializarBottomNav, 300);
   // Inicializar menu mostrando grupo negocios
   document.querySelectorAll('.subabas-bar').forEach(s=>s.style.display='none');
   const sub = document.getElementById('subabas-negocios');
@@ -4174,6 +4304,7 @@ function mostrarAjuda(aba, btn) {
 
 // Atualizar avatar no topo quando muda
 function atualizarPerfilTopo() {
+  if(telaAtual==='eu') atualizarTelaEu();
   const av = document.getElementById('avatar-topo');
   const nick = document.getElementById('user-nick-bar');
   const titulo = document.getElementById('titulo-topo');
@@ -4385,6 +4516,230 @@ function filtrarExtrato(tipo) {
     `;
   }).join('');
 }
+
+// ===================================================
+// BOTTOM NAV — NAVEGAÇÃO PRINCIPAL
+// ===================================================
+
+let telaAtual = 'negocios';
+
+function irParaTela(tela) {
+  // Esconder todas as telas
+  ['negocios','financas','mundo','social','eu'].forEach(t => {
+    const el = document.getElementById('tela-'+t);
+    if(el) el.classList.remove('ativa');
+    const bn = document.getElementById('bn-'+t);
+    if(bn) bn.classList.remove('ativo');
+  });
+  // Mostrar tela escolhida
+  const telaEl = document.getElementById('tela-'+tela);
+  if(telaEl) telaEl.classList.add('ativa');
+  const bnEl = document.getElementById('bn-'+tela);
+  if(bnEl) bnEl.classList.add('ativo');
+  telaAtual = tela;
+
+  // Ações ao entrar em cada tela
+  if(tela==='negocios'){ renderNegocios(); mostrarSubabaNegocios('negocios'); }
+  if(tela==='financas') atualizarTelaFinancas();
+  if(tela==='mundo') atualizarTelaMundo();
+  if(tela==='eu') atualizarTelaEu();
+  if(tela==='social') {} // social é estático
+
+  // Scroll pro topo
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ===== NEGÓCIOS - subabas internas =====
+function mostrarSubabaNegocios(aba) {
+  const abas = ['upgrades','gerentes','funcionarios','habilidades'];
+  // Esconder todas as divs extras
+  abas.forEach(a => {
+    const el = document.getElementById('tab-'+a);
+    if(el) el.style.display='none';
+  });
+  // Mostrar a aba pedida
+  if(aba !== 'negocios'){
+    const el = document.getElementById('tab-'+aba);
+    if(el) el.style.display='block';
+    if(aba==='upgrades') renderUpgrades();
+    if(aba==='gerentes') renderGerentes();
+    if(aba==='funcionarios') renderFuncionarios();
+    if(aba==='habilidades') renderHabilidades();
+  }
+}
+
+// ===== FINANÇAS - accordion =====
+function toggleSecao(id) {
+  const card = document.getElementById('secao-'+id);
+  if(!card) return;
+  const jaAberto = card.classList.contains('expandido');
+  // Fechar todos
+  document.querySelectorAll('.secao-card').forEach(c => c.classList.remove('expandido'));
+  // Abrir se não estava aberto
+  if(!jaAberto){
+    card.classList.add('expandido');
+    // Renderizar conteúdo
+    if(id==='bolsa') renderBolsa();
+    if(id==='imoveis') renderImoveis();
+    if(id==='memecoins') renderMemecoins();
+    if(id==='cassino') renderCassino();
+    if(id==='banco') renderBanco();
+    if(id==='mapa'){ renderMapa(); }
+    if(id==='exportacao') renderExportacao();
+    if(id==='mercado') renderMercado();
+    // Scroll pro card
+    setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+  }
+}
+
+function atualizarTelaFinancas(){
+  // Atualizar desc das seções com dados atuais
+  const totalAluguel = IMOVEIS_TIPOS.reduce((s,t)=>s+t.aluguel*t.comprados.length,0);
+  const totalAcoes = ACOES.filter(a=>a.qtd>0).length;
+  const totalMeme = MEMECOINS.filter(m=>m.qtd>0).length;
+
+  const descBolsa = document.querySelector('#secao-bolsa .secao-desc');
+  if(descBolsa) descBolsa.textContent = totalAcoes+' ações · dividendos todo minuto';
+
+  const descImoveis = document.querySelector('#secao-imoveis .secao-desc');
+  if(descImoveis) descImoveis.textContent = totalAluguel>0?'Aluguel: '+fmt(totalAluguel)+'/min':'Compre imóveis pra receber aluguel';
+
+  const descMeme = document.querySelector('#secao-memecoins .secao-desc');
+  if(descMeme) descMeme.textContent = totalMeme>0?totalMeme+' moedas em carteira':'Altamente volátil — pump & dump';
+
+  const descBanco = document.querySelector('#secao-banco .secao-desc');
+  if(descBanco) descBanco.textContent = G.emprestimo?'⚠️ Dívida: '+fmt(G.emprestimo.restante)+' (-25% renda)':'Empréstimos e seguro';
+}
+
+function atualizarTelaMundo(){
+  const bairroAtual = BAIRROS.find(b=>b.id===G.bairroAtual);
+  const descMapa = document.querySelector('#secao-mapa .secao-desc');
+  if(descMapa && bairroAtual) descMapa.textContent = bairroAtual.icon+' '+bairroAtual.nome+' · x'+bairroAtual.mult;
+
+  const ativasExport = Object.keys(exportacaoAtiva).filter(k=>!k.includes('_renda')).length;
+  const descExport = document.querySelector('#secao-exportacao .secao-desc');
+  if(descExport) descExport.textContent = ativasExport>0?ativasExport+' rota(s) ativa(s) · USD '+cambioUSD.toFixed(2):'Câmbio real — venda pro mundo';
+}
+
+// ===== SOCIAL - sub-seções =====
+function trocarSecaoSocial(secao) {
+  const el = document.getElementById('social-sub-content');
+  if(!el) return;
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+  if(secao==='chat'){
+    el.innerHTML = '<div class="card"><div class="chat-box" id="chat-box" style="height:200px;overflow-y:auto"></div><div class="chat-input-row" style="display:flex;gap:8px;margin-top:8px"><input type="text" id="chat-input" placeholder="Mensagem..." maxlength="100" style="flex:1;margin-bottom:0"><button class="btn-small" style="color:var(--green);border-color:var(--green)" onclick="enviarChat()">Enviar</button></div></div>';
+    iniciarChat();
+  } else if(secao==='guilds'){
+    el.innerHTML = '<div id="guild-content"></div>';
+    renderGuilds();
+  } else if(secao==='sabotagem'){
+    el.innerHTML = `
+      <div class="card">
+        <div style="font-size:13px;font-weight:500;color:var(--red);margin-bottom:8px">💣 Sabotagem</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Mande fiscalização pro rival. Ele perde dinheiro e um negócio fecha!</div>
+        <input type="text" id="sabotagem-nick" placeholder="Nickname do alvo">
+        <div style="display:flex;gap:6px">
+          <button class="btn-small" style="flex:1;color:var(--red);border-color:var(--red)" onclick="sabotar(5000,'pequena')">💣 Pequena (R$5k)</button>
+          <button class="btn-small" style="flex:1;color:var(--red);border-color:var(--red)" onclick="sabotar(20000,'media')">💣 Média (R$20k)</button>
+          <button class="btn-small" style="flex:1;color:var(--red);border-color:var(--red)" onclick="sabotar(100000,'grande')">💣 Grande (R$100k)</button>
+        </div>
+        <div id="sabotagem-msg" style="font-size:11px;margin-top:6px;color:var(--text3)"></div>
+      </div>`;
+  } else if(secao==='monopolio'){
+    el.innerHTML = '<div id="social-content"></div>';
+    // Mostrar apenas seção de monopólio
+    renderSocial();
+  }
+}
+
+// ===== EU - sub-seções =====
+function trocarSecaoEu(secao) {
+  const el = document.getElementById('eu-sub-content');
+  if(!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--text2);font-size:13px">Carregando...</div>';
+  setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+
+  if(secao==='loja'){ el.innerHTML='<div id="loja-content"></div>'; renderLoja(); }
+  else if(secao==='missoes'){ el.innerHTML='<div id="lista-missoes"></div>'; renderMissoes(); }
+  else if(secao==='extrato'){ el.innerHTML='<div id="extrato-content"></div>'; renderExtrato(); }
+  else if(secao==='stats'){ el.innerHTML='<div id="stats-content"></div>'; renderStats(); }
+  else if(secao==='historico'){ el.innerHTML='<p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Últimos 20 eventos.</p><div id="lista-historico"></div>'; renderHistorico(); }
+  else if(secao==='molduras'){
+    el.innerHTML='<div id="social-content"></div>';
+    renderSocial();
+  }
+}
+
+function atualizarTelaEu() {
+  const liga = getLiga();
+  const trofDisplay = (G.trofeus||[]).map(t=>t.icon).join(' ') || '';
+  const banner = BANNERS_LOJA.find(b=>b.id===(G.banner||'nenhum'));
+  const moldura = G.moldura||'nenhuma';
+
+  const bannerEl = document.getElementById('eu-banner');
+  if(bannerEl && banner) bannerEl.style.background = banner.cor;
+
+  const avatarEl = document.getElementById('eu-avatar-wrap');
+  if(avatarEl){
+    avatarEl.textContent = G.avatar||'🧑‍💼';
+    avatarEl.className = moldura!=='nenhuma'?'moldura-'+moldura:'';
+    avatarEl.style = 'font-size:40px;background:var(--bg2);border-radius:50%;width:56px;height:56px;display:inline-flex;align-items:center;justify-content:center;border:3px solid var(--border2);margin-bottom:4px';
+  }
+
+  const nomeEl = document.getElementById('eu-nome');
+  if(nomeEl) nomeEl.textContent = G.nickname||'Jogador';
+
+  const tituloEl = document.getElementById('eu-titulo-display');
+  if(tituloEl) tituloEl.textContent = G.titulo||'';
+
+  const bioEl = document.getElementById('eu-bio-display');
+  if(bioEl) bioEl.textContent = G.bio?'"'+G.bio+'"':'';
+
+  const trofEl = document.getElementById('eu-trofeus-display');
+  if(trofEl) trofEl.textContent = trofDisplay;
+
+  const ligaEl = document.getElementById('eu-liga-display');
+  if(ligaEl) ligaEl.textContent = liga.icon+' '+liga.nome;
+
+  const totalEl = document.getElementById('eu-total-display');
+  if(totalEl) totalEl.textContent = fmt(G.totalGanho);
+
+  const nivelEl = document.getElementById('eu-nivel-display');
+  if(nivelEl) nivelEl.textContent = 'Nv.'+G.xpNivel;
+}
+
+// Compat: funções antigas que agora redirecionam
+function trocarTab(nome, btn, grupo) {
+  // Redirecionar pro novo sistema
+  if(['negocios','upgrades','gerentes','funcionarios','habilidades'].includes(nome)){
+    irParaTela('negocios');
+    mostrarSubabaNegocios(nome);
+  } else if(['bolsa','imoveis','memecoins','cassino','banco'].includes(nome)){
+    irParaTela('financas');
+    setTimeout(()=>toggleSecao(nome),100);
+  } else if(['mapa','exportacao','mercado'].includes(nome)){
+    irParaTela('mundo');
+    setTimeout(()=>toggleSecao(nome==='mapa'?'mapa':nome),100);
+  } else if(['social','guilds','chat','loja'].includes(nome)){
+    if(nome==='loja'){ irParaTela('eu'); setTimeout(()=>trocarSecaoEu('loja'),100); }
+    else { irParaTela('social'); if(nome==='chat')setTimeout(()=>trocarSecaoSocial('chat'),100); if(nome==='guilds')setTimeout(()=>trocarSecaoSocial('guilds'),100); }
+  } else if(['missoes','historico','extrato','stats'].includes(nome)){
+    irParaTela('eu');
+    setTimeout(()=>trocarSecaoEu(nome),100);
+  }
+}
+
+// Compatibilidade com cards de destaque
+function scrollParaCassino(){ irParaTela('financas'); setTimeout(()=>toggleSecao('cassino'),200); }
+function scrollParaLoja(){ irParaTela('eu'); setTimeout(()=>trocarSecaoEu('loja'),200); }
+function scrollParaSabotagem(){ irParaTela('social'); setTimeout(()=>trocarSecaoSocial('sabotagem'),200); }
+
+// Inicializar tela de negócios
+function inicializarBottomNav(){
+  irParaTela('negocios');
+  atualizarTelaEu();
+}
+
 
 </script>
 </body>
