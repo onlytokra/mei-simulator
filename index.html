@@ -561,13 +561,36 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   <div id="tab-gerentes" class="tab-content"><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Gerentes dobram produção.</p><div id="lista-gerentes"></div></div>
   <div id="tab-funcionarios" class="tab-content"><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Bônus globais.</p><div id="lista-funcionarios"></div></div>
   <div id="tab-habilidades" class="tab-content"><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Distribua pontos de talento.</p><div id="lista-habilidades"></div></div>
+  <div class="subabas-bar" id="subabas-extra" style="display:none">
+    <button class="subaba ativo" onclick="trocarTab('missoes',this,'extra')">📋 Missões</button>
+    <button class="subaba " onclick="trocarTab('historico',this,'extra')">📰 Histórico</button>
+    <button class="subaba " onclick="trocarTab('stats',this,'extra')">📊 Stats</button>
+  </div>
   <div id="tab-missoes" class="tab-content"><div id="lista-missoes"></div></div>
+  <div class="subabas-bar" id="subabas-mundo" style="display:none">
+    <button class="subaba ativo" onclick="trocarTab('mapa',this,'mundo')">🗺️ Bairros</button>
+    <button class="subaba " onclick="trocarTab('exportacao',this,'mundo')">🌍 Exportação</button>
+    <button class="subaba " onclick="trocarTab('mercado',this,'mundo')">🕵️ Mercado Negro</button>
+  </div>
   <div id="tab-mapa" class="tab-content"><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Clique para expandir.</p><div class="mapa-city" id="mapa-bairros"></div><div id="mapa-detalhes"></div></div>
+  <div class="subabas-bar" id="subabas-financas" style="display:none">
+    <button class="subaba ativo" onclick="trocarTab('bolsa',this,'financas')">📈 Bolsa</button>
+    <button class="subaba " onclick="trocarTab('memecoins',this,'financas')">🐸 Memecoins</button>
+    <button class="subaba " onclick="trocarTab('imoveis',this,'financas')">🏠 Imóveis</button>
+    <button class="subaba " onclick="trocarTab('banco',this,'financas')">🏦 Banco</button>
+    <button class="subaba " onclick="trocarTab('cassino',this,'financas')">🎰 Cassino</button>
+  </div>
   <div id="tab-bolsa" class="tab-content"><p style="font-size:12px;color:var(--text2);margin-bottom:0.5rem">Preços atualizam a cada 10s. Dividendos pagos a cada minuto.</p><div id="lista-bolsa"></div></div>
   <div id="tab-imoveis" class="tab-content"><div id="imoveis-content"></div></div>
   <div id="tab-exportacao" class="tab-content"><div id="exportacao-content"></div></div>
   <div id="tab-memecoins" class="tab-content"><div id="memecoins-content"></div></div>
   <div id="tab-cassino" class="tab-content"><div id="cassino-content"></div></div>
+  <div class="subabas-bar" id="subabas-social-grp" style="display:none">
+    <button class="subaba ativo" onclick="trocarTab('social',this,'social-grp')">👑 Perfil</button>
+    <button class="subaba " onclick="trocarTab('guilds',this,'social-grp')">🏰 Guild</button>
+    <button class="subaba " onclick="trocarTab('chat',this,'social-grp')">💬 Chat</button>
+    <button class="subaba " onclick="trocarTab('loja',this,'social-grp')">🛍️ Loja</button>
+  </div>
   <div id="tab-social" class="tab-content"><div id="social-content"></div></div>
   <div id="tab-loja" class="tab-content"><div id="loja-content"></div></div>
   <div id="tab-mercado" class="tab-content"><p style="font-size:12px;color:var(--red);margin-bottom:0.75rem">⚠️ Mercado negro — alto risco, alta recompensa. Pode atrair fiscalização!</p><div id="lista-mercado"></div></div>
@@ -2042,7 +2065,25 @@ function abrirGrupo(grupo){
 }
 
 function renderizarAba(nome){
-  renderizarAba(nome);
+  if(nome==='upgrades')renderUpgrades();
+  else if(nome==='gerentes')renderGerentes();
+  else if(nome==='funcionarios')renderFuncionarios();
+  else if(nome==='habilidades')renderHabilidades();
+  else if(nome==='missoes')renderMissoes();
+  else if(nome==='mapa')renderMapa();
+  else if(nome==='bolsa')renderBolsa();
+  else if(nome==='mercado')renderMercado();
+  else if(nome==='banco')renderBanco();
+  else if(nome==='guilds')renderGuilds();
+  else if(nome==='chat')iniciarChat();
+  else if(nome==='historico')renderHistorico();
+  else if(nome==='stats')renderStats();
+  else if(nome==='imoveis')renderImoveis();
+  else if(nome==='exportacao')renderExportacao();
+  else if(nome==='memecoins')renderMemecoins();
+  else if(nome==='cassino')renderCassino();
+  else if(nome==='social')renderSocial();
+  else if(nome==='loja')renderLoja();
 }
 
 function trocarTab(nome,btn,grupoForce){
