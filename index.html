@@ -180,6 +180,19 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   .perfil-stat-label{font-size:10px;color:var(--text2);margin-top:2px;}
   .busca-resultado{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:0.6rem 0.8rem;margin-bottom:0.4rem;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color 0.15s;}
   .busca-resultado:hover{border-color:var(--green);}
+
+  /* HEADER BOTÕES REORGANIZADOS */
+  .header-main-btns { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-bottom:6px; }
+  .header-main-btn { background:var(--bg2); border:1px solid var(--border); border-radius:20px; color:var(--text2); font-size:12px; padding:5px 12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.15s; white-space:nowrap; }
+  .header-main-btn:hover { border-color:var(--green); color:var(--text); }
+  .header-main-btn.red { border-color:var(--red); color:var(--red); }
+  .header-main-btn.red:hover { background:var(--red); color:#fff; }
+  .mais-menu { display:none; background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:8px; margin-bottom:8px; flex-wrap:wrap; gap:6px; justify-content:center; }
+  .mais-menu.ativo { display:flex; animation:slide-in 0.2s ease; }
+  .mais-menu-btn { background:var(--bg3); border:1px solid var(--border); border-radius:8px; color:var(--text2); font-size:12px; padding:5px 12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.15s; white-space:nowrap; }
+  .mais-menu-btn:hover { border-color:var(--border2); color:var(--text); }
+  .mais-menu-btn.red { color:var(--red); border-color:var(--red); }
+  .mais-menu-btn.red:hover { background:var(--red); color:#fff; }
 </style>
 </head>
 <body>
@@ -412,19 +425,25 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
 <div id="game" style="display:none">
   <div class="header">
     <div style="font-size:11px;color:var(--text3);margin-bottom:6px">MEI Simulator v4.0 — <span id="header-nick">...</span></div>
-    <div class="header-btns">
-      <button class="btn-small" onclick="abrirModal('modal-intro')">? ajuda</button>
-      <button class="btn-small" onclick="abrirConquistas()">🏆</button>
-      <button class="btn-small" onclick="abrirModal('modal-busca')">🔍</button>
-      <button class="btn-small" onclick="abrirRanking()">🏅</button>
-      <button class="btn-small" onclick="abrirModal('modal-patch')">📋</button>
-      <button class="btn-small" onclick="abrirShare()">📸</button>
-      <button class="btn-small" onclick="abrirAvatarModal()">👤</button>
-      <button class="btn-small" onclick="toggleTema()">🌓</button>
-      <button class="btn-small" onclick="abrirModal('modal-presente-amigo')">🎁</button>
-      <button class="btn-small" onclick="abrirModal('modal-sugestao')">💡</button>
-      <button class="btn-small" onclick="abrirReset()" style="color:var(--red);border-color:var(--red)">🗑️ reset</button>
-      <button class="btn-small" onclick="sair()" style="color:var(--red);border-color:var(--red)">sair</button>
+    <!-- BOTÕES PRINCIPAIS -->
+    <div class="header-main-btns">
+      <button class="header-main-btn" onclick="abrirModal('modal-intro')">? Ajuda</button>
+      <button class="header-main-btn" onclick="abrirModal('modal-busca')">🔍 Buscar</button>
+      <button class="header-main-btn" onclick="abrirRanking()">🏅 Ranking</button>
+      <button class="header-main-btn" onclick="abrirAvatarModal()">👤 Avatar</button>
+      <button class="header-main-btn" id="btn-mais" onclick="toggleMaisMenu()">⚙️ Mais ▾</button>
+    </div>
+    <!-- MENU MAIS -->
+    <div class="mais-menu" id="mais-menu">
+      <button class="mais-menu-btn" onclick="abrirConquistas();toggleMaisMenu()">🏆 Conquistas</button>
+      <button class="mais-menu-btn" onclick="abrirModal('modal-patch');toggleMaisMenu()">📋 Atualizações</button>
+      <button class="mais-menu-btn" onclick="abrirShare();toggleMaisMenu()">📸 Compartilhar</button>
+      <button class="mais-menu-btn" onclick="abrirModal('modal-presente-amigo');toggleMaisMenu()">🎁 Presente</button>
+      <button class="mais-menu-btn" onclick="abrirModal('modal-sugestao');toggleMaisMenu()">💡 Sugestão</button>
+      <button class="mais-menu-btn" onclick="toggleMute();toggleMaisMenu()" id="btn-mute-mais">🔊 Som</button>
+      <button class="mais-menu-btn" onclick="toggleTema();toggleMaisMenu()">🌓 Tema</button>
+      <button class="mais-menu-btn red" onclick="abrirReset();toggleMaisMenu()">🗑️ Reset</button>
+      <button class="mais-menu-btn red" onclick="sair()">🚪 Sair</button>
     </div>
     <div class="avatar-display" id="avatar-display">🧑‍💼</div>
     <div class="dinheiro" id="dinheiro">R$ 0,00</div>
@@ -2850,20 +2869,32 @@ function pulsarElemento(id, cor='#1D9E75') {
 
 function toggleMute() {
   const mutado = SOM.toggle();
-  const btn = document.getElementById('btn-mute');
-  if (btn) btn.textContent = mutado ? '🔇' : '🔊';
+  const btn = document.getElementById('btn-mute-mais');
+  if (btn) btn.textContent = mutado ? '🔇 Som' : '🔊 Som';
 }
 
 function adicionarBtnMute() {
-  const btns = document.querySelector('.header-btns');
-  if (!btns || document.getElementById('btn-mute')) return;
-  const btn = document.createElement('button');
-  btn.className = 'btn-small';
-  btn.id = 'btn-mute';
-  btn.textContent = '🔊';
-  btn.onclick = toggleMute;
-  btns.insertBefore(btn, btns.lastChild);
+  // Botão mute agora está dentro do menu Mais
 }
+
+function toggleMaisMenu() {
+  const menu = document.getElementById('mais-menu');
+  const btn = document.getElementById('btn-mais');
+  if (!menu) return;
+  const aberto = menu.classList.contains('ativo');
+  menu.classList.toggle('ativo');
+  if (btn) btn.textContent = aberto ? '⚙️ Mais ▾' : '⚙️ Mais ▲';
+}
+
+// Fechar menu mais ao clicar fora
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('mais-menu');
+  const btn = document.getElementById('btn-mais');
+  if (menu && !menu.contains(e.target) && btn && !btn.contains(e.target)) {
+    menu.classList.remove('ativo');
+    if (btn) btn.textContent = '⚙️ Mais ▾';
+  }
+});
 
 // Sons no botão principal de clique
 document.getElementById('btn-clique').addEventListener('click', (e) => {
