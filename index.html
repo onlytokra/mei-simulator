@@ -819,6 +819,8 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
       <div class="eu-item" onclick="trocarSecaoEu('extrato')"><div class="eu-item-icon">💳</div><div class="eu-item-nome">Extrato</div></div>
       <div class="eu-item" onclick="trocarSecaoEu('stats')"><div class="eu-item-icon">📊</div><div class="eu-item-nome">Stats</div></div>
       <div class="eu-item" onclick="trocarSecaoEu('historico')"><div class="eu-item-icon">📰</div><div class="eu-item-nome">Histórico</div></div>
+      <div class="eu-item" onclick="trocarSecaoEu('historia')"><div class="eu-item-icon">📖</div><div class="eu-item-nome">Império</div></div>
+      <div class="eu-item" onclick="trocarSecaoEu('historia')"><div class="eu-item-icon">📖</div><div class="eu-item-nome">Império</div></div>
     </div>
     <!-- Sub-conteúdo eu -->
     <div id="eu-sub-content" style="margin-top:0.75rem"></div>
@@ -873,7 +875,7 @@ let currentUser=null,semConta=false,ultimoSave=0;
 let chatListener=null;
 
 const SAVE_KEY='mei_sim_v4';
-const RPS_BASE=[0.03,0.15,1.2,6,24,105,600,3600,21000,150000,1200000,9000000];
+const RPS_BASE=[0.03,0.15,1.2,6,24,105,600,3600,21000,150000,1200000,9000000,0.5,15,8,80,4];
 const AVATARES_DATA = [
   // GRÁTIS — disponíveis pra todos
   { emoji:'🧑‍💼', nome:'Executivo',     tipo:'free',  req:0,    custo:0 },
@@ -1020,6 +1022,16 @@ const G={
     {id:'construtora',icon:'🏗️',nome:'Construtora',desc:'Alto padrão',base:225000000,rps:150000,qtd:0,prog:0,ciclo:200},
     {id:'banco_neg',icon:'🏦',nome:'Banco Digital',desc:'Pix na hora',base:1500000000,rps:1200000,qtd:0,prog:0,ciclo:220},
     {id:'aeroporto',icon:'✈️',nome:'Aeroporto',desc:'Voos nacionais e internacionais',base:12000000000,rps:9000000,qtd:0,prog:0,ciclo:260},
+    {id:'agua_praia',icon:'🏖️',nome:'Venda de Água na Praia',desc:'R$5 a garrafinha, toma ou deixa',base:50,rps:0.08,qtd:0,prog:0,ciclo:6},
+    {id:'shein',icon:'📦',nome:'Importação da Shein',desc:'30 dias pra chegar, talvez',base:300,rps:0.4,qtd:0,prog:0,ciclo:10},
+    {id:'relogio',icon:'⌚',nome:'Loja de Relógio na Calçada',desc:'Original, juro que é original',base:2000,rps:3,qtd:0,prog:0,ciclo:18},
+    {id:'salgado',icon:'🥟',nome:'Salgadinho na Escola',desc:'Coxinha por R$2, combo por R$3.50',base:8000,rps:15,qtd:0,prog:0,ciclo:22},
+    {id:'racha_cuca',icon:'🎮',nome:'LAN House do Racha-Cuca',desc:'R$2 a hora, CS 1.6 incluso',base:40000,rps:80,qtd:0,prog:0,ciclo:35},
+    {id:'agua_praia',icon:'💧',nome:'Venda de Água na Praia',desc:'R$3 a garrafa, mano',base:50,rps:0.5,qtd:0,prog:0,ciclo:6,secreto:true},
+    {id:'shein',icon:'👗',nome:'Importação da Shein',desc:'Chega em 30 dias... ou nunca',base:2000,rps:15,qtd:0,prog:0,ciclo:20,secreto:true},
+    {id:'relogio',icon:'⌚',nome:'Relógio na Calçada',desc:'Rolex por R$50, fio',base:500,rps:8,qtd:0,prog:0,ciclo:12,secreto:true},
+    {id:'onlymei',icon:'💼',nome:'OnlyMEI',desc:'Conteúdo exclusivo pra assinantes',base:10000,rps:80,qtd:0,prog:0,ciclo:30,secreto:true},
+    {id:'banheiro',icon:'🚽',nome:'Banheiro Pago',desc:'R$2 o uso, R$1 pra quem vai rápido',base:300,rps:4,qtd:0,prog:0,ciclo:10,secreto:true},
   ],
   upgrades:[
     {id:'u1',negocio:'cachorro',nome:'Carrinho Elétrico',desc:'+100%',custo:500,mult:2},
@@ -1046,6 +1058,64 @@ const G={
     {id:'g8',negocio:'posto',nome:'Gerente Posto',icon:'🧑‍💼',custo:60000000,contratado:false},
   ],
   eventoPool:[
+    // CARNAVAL
+    {txt:'🎭 Carnaval! Todo mundo gastando! +3x por 30s',tipo:'bom',efeito:'boost',mult:3,dur:30},
+    {txt:'🥁 Bloco passou na frente! +2x por 20s',tipo:'bom',efeito:'boost',mult:2,dur:20},
+    {txt:'🍺 Carnaval de rua lotou o negócio! +R$5.000',tipo:'bom',efeito:'bonus',val:5000},
+    // COPA DO MUNDO
+    {txt:'⚽ Brasil marcou! Todo mundo comemorando! +3x por 25s',tipo:'bom',efeito:'boost',mult:3,dur:25},
+    {txt:'😭 Brasil perdeu... clientes foram embora.',tipo:'ruim',efeito:'chuva',dur:15},
+    {txt:'📺 Jogo ao vivo! Fluxo caiu.',tipo:'ruim',efeito:'chuva',dur:10},
+    // BLACK FRIDAY
+    {txt:'🛍️ Black Friday! Vendas triplicaram por 1 minuto!',tipo:'bom',efeito:'boost',mult:3,dur:60},
+    {txt:'💳 Clientes parcelando tudo! +R$10.000',tipo:'bom',efeito:'bonus',val:10000},
+    // NATAL
+    {txt:'🎄 Natal chegou! Demanda explodiu! +2x por 45s',tipo:'bom',efeito:'boost',mult:2,dur:45},
+    {txt:'🎅 Papai Noel visitou o negócio! +R$3.000',tipo:'bom',efeito:'bonus',val:3000},
+    // DIA DAS MÃES/PAIS
+    {txt:'💐 Dia das Mães! Vendas nas alturas! +2x por 30s',tipo:'bom',efeito:'boost',mult:2,dur:30},
+    {txt:'👔 Dia dos Pais! Todo mundo comprando! +R$2.000',tipo:'bom',efeito:'bonus',val:2000},
+    // TÍPICOS BRASILEIROS
+    {txt:'🚌 Ônibus atrasou, clientes esperando mais! +R$1.500',tipo:'bom',efeito:'bonus',val:1500},
+    {txt:'💡 Apagão! Negócios fecharam por 10s.',tipo:'ruim',efeito:'chuva',dur:10},
+    {txt:'📱 Caiu o Pix! Ninguém consegue pagar.',tipo:'ruim',efeito:'chuva',dur:8},
+    {txt:'🤑 Caiu o auxílio! Movimento dobrou! +2x por 20s',tipo:'bom',efeito:'boost',mult:2,dur:20},
+    {txt:'🏖️ Feriado prolongado! Turistas chegaram! +R$4.000',tipo:'bom',efeito:'bonus',val:4000},
+    {txt:'⛽ Gasolina subiu! Custos aumentaram.',tipo:'ruim',efeito:'multa',val:800},
+    {txt:'🎆 Réveillon! +3x por 30s de fogos!',tipo:'bom',efeito:'boost',mult:3,dur:30},
+    {txt:'🌧️ Temporal alagou a rua!',tipo:'ruim',efeito:'chuva',dur:20},
+    // EVENTOS TEMÁTICOS BRASILEIROS
+    {txt:'🎭 Carnaval! Vendas 3x por 30s!',tipo:'bom',efeito:'boost',mult:3,dur:30},
+    {txt:'⚽ Copa do Mundo! Bares lotados! 2x por 25s',tipo:'bom',efeito:'boost',mult:2,dur:25},
+    {txt:'🛍️ Black Friday! 2.5x por 20s!',tipo:'bom',efeito:'boost',mult:2.5,dur:20},
+    {txt:'🎄 Natal! Vendas em alta! 2x por 30s',tipo:'bom',efeito:'boost',mult:2,dur:30},
+    {txt:'🥚 Páscoa! Chocolate vendendo tudo! +R$500',tipo:'bom',efeito:'bonus',val:500},
+    {txt:'👨‍👩‍👧 Dia das Mães! Maior venda do ano! 3x por 20s',tipo:'bom',efeito:'boost',mult:3,dur:20},
+    {txt:'👨‍👩‍👦 Dia dos Pais! Churrascaria lotada! 2x por 20s',tipo:'bom',efeito:'boost',mult:2,dur:20},
+    {txt:'💝 Dia dos Namorados! Flores e chocolates! 2x por 15s',tipo:'bom',efeito:'boost',mult:2,dur:15},
+    {txt:'🎆 Réveillon! Champagne vendendo! +R$1.000',tipo:'bom',efeito:'bonus',val:1000},
+    {txt:'🌧️ Junho chuvoso! Vendas caem por 15s',tipo:'ruim',efeito:'chuva',dur:15},
+    {txt:'😮 Crise econômica! -20% por 20s',tipo:'ruim',efeito:'crise',dur:20},
+    {txt:'🚛 Greve dos caminhoneiros! Falta tudo!',tipo:'ruim',efeito:'chuva',dur:20},
+    {txt:'📱 Influencer falou do seu negócio! +R$2.000',tipo:'bom',efeito:'bonus',val:2000},
+    {txt:'🤳 Seu negócio viralizou no TikTok! 2x por 15s',tipo:'bom',efeito:'boost',mult:2,dur:15},
+    {txt:'🏆 Melhor empresa do bairro! +Reputação',tipo:'bom',efeito:'rep_bonus'},
+    // EVENTOS TEMÁTICOS BRASILEIROS
+    {txt:'🎭 Carnaval! Todo mundo na folia! +200% por 30s',tipo:'bom',efeito:'boost',mult:3,dur:30},
+    {txt:'⚽ Brasil na Copa! Torcida lota os negócios! +150% por 20s',tipo:'bom',efeito:'boost',mult:2.5,dur:20},
+    {txt:'🛍️ Black Friday! Vendas explodiram! +300% por 15s',tipo:'bom',efeito:'boost',mult:4,dur:15},
+    {txt:'🎄 Natal! Presentes pra todo mundo! +200% por 25s',tipo:'bom',efeito:'boost',mult:3,dur:25},
+    {txt:'💔 Brasil caiu na Copa... clientes tristes. -50% por 15s',tipo:'ruim',efeito:'chuva',dur:15},
+    {txt:'🎆 Réveillon! Todo mundo gastando! +250% por 20s',tipo:'bom',efeito:'boost',mult:3.5,dur:20},
+    {txt:'💐 Dia das Mães! Maior venda do ano! +180% por 20s',tipo:'bom',efeito:'boost',mult:2.8,dur:20},
+    {txt:'👨 Dia dos Pais! Churrasco cheio! +150% por 18s',tipo:'bom',efeito:'boost',mult:2.5,dur:18},
+    {txt:'🌧️ Enchente em SP! Comércio fechado. -40% por 20s',tipo:'ruim',efeito:'chuva',dur:20},
+    {txt:'⚡ Apagão! Sem luz por 10s...',tipo:'ruim',efeito:'chuva',dur:10},
+    {txt:'🤑 Bolsa Família caiu! Consumo disparou! +100% por 15s',tipo:'bom',efeito:'boost',mult:2,dur:15},
+    {txt:'🚛 Greve dos caminhoneiros! Sem produto.',tipo:'ruim',efeito:'chuva',dur:12},
+    {txt:'📱 Virou meme no Reels! +R$5.000',tipo:'bom',efeito:'bonus',val:5000},
+    {txt:'😤 Nota 1 no Google Maps... reputação caiu!',tipo:'ruim',efeito:'nada'},
+    {txt:'🏖️ Semana Santa! Turismo em alta! +120% por 18s',tipo:'bom',efeito:'boost',mult:2.2,dur:18},
     {txt:'☔ Chuva! -30% por 10s',tipo:'ruim',efeito:'chuva',dur:10},
     {txt:'⚡ Conta de luz extra! -R$200',tipo:'ruim',efeito:'multa',val:200},
     {txt:'⚡ Conta de luz! -R$500',tipo:'ruim',efeito:'multa',val:500},
@@ -1074,6 +1144,18 @@ const G={
     {id:'c10',nome:'Investidor',desc:'Compre ações',icon:'📈',check:g=>ACOES.some(a=>a.qtd>0)},
     {id:'c11',nome:'Império Total',desc:'Todos os 12 negócios',icon:'✈️',check:g=>g.negocios.every(n=>n.qtd>0)},
     {id:'c12',nome:'Guildeiro',desc:'Entre em uma guild',icon:'🏰',check:g=>!!g.guildId},
+    {id:'c13',nome:'Caxias do Sul',desc:'Tenha 10 negócios diferentes abertos',icon:'🏙️',check:g=>g.negocios.filter(n=>n.qtd>0).length>=10},
+    {id:'c14',nome:'Magnata do Cachorro',desc:'100 carrinhos de cachorro-quente',icon:'🌭',check:g=>g.negocios.find(n=>n.id==='cachorro')?.qtd>=100},
+    {id:'c15',nome:'Rei da Praia',desc:'50 barracas de água na praia',icon:'🏖️',check:g=>g.negocios.find(n=>n.id==='agua_praia')?.qtd>=50},
+    {id:'c16',nome:'Importador',desc:'Abra a Importação da Shein',icon:'📦',check:g=>g.negocios.find(n=>n.id==='shein')?.qtd>0},
+    {id:'c13',nome:'Rei do Cachorro',desc:'R$1M só de cachorro-quente',icon:'🌭',check:g=>g.negocios.find(n=>n.id==='cachorro')?.qtd>=50},
+    {id:'c14',nome:'Sobrevivente',desc:'50 eventos ruins',icon:'💪',check:g=>(g.eventosRuins||0)>=50},
+    {id:'c15',nome:'Viciado',desc:'1000 cliques manuais',icon:'👆',check:g=>g.cliques>=1000},
+    {id:'c16',nome:'Exportador Nato',desc:'Exporte pra 4 destinos',icon:'🌍',check:g=>Object.keys(g.exportacaoAtiva||{}).filter(k=>!k.includes('_renda')).length>=4},
+    {id:'c17',nome:'Cassino é Vida',desc:'100 jogadas no cassino',icon:'🎰',check:g=>(g.cassinoEstatisticas?.jogadas||0)>=100},
+    {id:'c18',nome:'Sabotador',desc:'Sabotar 5 jogadores',icon:'💣',check:g=>(g.sabotagens||0)>=5},
+    {id:'c19',nome:'Proprietário',desc:'Ter todos os tipos de imóvel',icon:'🏗️',check:g=>IMOVEIS_TIPOS.every(t=>t.comprados.length>0)},
+    {id:'c20',nome:'Magnata Completo',desc:'Ter todos os 12 negócios com 10+',icon:'👑',check:g=>g.negocios.every(n=>n.qtd>=10)},
   ],
   conquistasSecretas:[
     {id:'cs1',nome:'Combo Master',desc:'Atinja combo x10',icon:'⚡',revelada:false,check:g=>g.combo>=10},
@@ -1082,6 +1164,14 @@ const G={
     {id:'cs4',nome:'Sortudo',desc:'Ganhe no jogo do bicho',icon:'🎰',revelada:false,check:g=>g.conquistasSecretasDesbloqueadas.includes('cs4')},
     {id:'cs5',nome:'Trilionário',desc:'Acumule R$1 trilhão',icon:'💰',revelada:false,check:g=>g.totalGanho>=1e12},
     {id:'cs6',nome:'Sociável',desc:'Envie 10 mensagens no chat',icon:'💬',revelada:false,check:g=>g.conquistasSecretasDesbloqueadas.includes('cs6')},
+  {id:'cs7',nome:'Fiscal Sobrevivente',desc:'Sobreviva a 10 fiscalizações',icon:'🕵️',revelada:false,check:g=>g.conquistasSecretasDesbloqueadas.includes('cs7')},
+  {id:'cs8',nome:'Viciado no Bicho',desc:'Jogue no bicho 20 vezes',icon:'🐾',revelada:false,check:g=>g.conquistasSecretasDesbloqueadas.includes('cs8')},
+  {id:'cs9',nome:'Marqueteiro Nato',desc:'Faça 5 saques diferentes',icon:'🎭',revelada:false,check:g=>g.conquistasSecretasDesbloqueadas.includes('cs9')},
+  {id:'cs10',nome:'Falido Feliz',desc:'Fique com menos de R$1',icon:'😅',revelada:false,check:g=>g.dinheiro<1&&g.totalGanho>1000},
+  {id:'cs7',nome:'Água na Praia',desc:'Abra a Venda de Água na Praia',icon:'🏖️',revelada:false,check:g=>g.negocios.some(n=>n.id==='agua_praia'&&n.qtd>0)},
+  {id:'cs8',nome:'Sheineiro',desc:'Abra a Importação da Shein',icon:'👗',revelada:false,check:g=>g.negocios.some(n=>n.id==='shein'&&n.qtd>0)},
+  {id:'cs9',nome:'Pistoleiro do Relógio',desc:'Abra a Loja de Relógio na Calçada',icon:'⌚',revelada:false,check:g=>g.negocios.some(n=>n.id==='relogio'&&n.qtd>0)},
+  {id:'cs10',nome:'Fake News!',desc:'Espalhe fake news sobre um rival',icon:'📰',revelada:false,check:g=>g.conquistasSecretasDesbloqueadas.includes('cs10')},
   ],
 };
 
@@ -1658,7 +1748,9 @@ function montarSave(){
     emprestimo:G.emprestimo,seguroAtivo:G.seguroAtivo,seguroDuracao:G.seguroDuracao,seguroTick:G.seguroTick,
     inflacaoMult:G.inflacaoMult,tema:G.tema,nickname:G.nickname,avatar:G.avatar,
     presenteDia:G.presenteDia,presenteStreak:G.presenteStreak,
-    extrato:G.extrato?.slice(-100)||[],missoes:G.missoes,missaoReset:G.missaoReset,franquias:G.franquias,
+    extrato:G.extrato?.slice(-100)||[],
+    historiaImperio:G.historiaImperio?.slice(-50)||[],
+    historiaImperio:G.historiaImperio?.slice(-50)||[],missoes:G.missoes,missaoReset:G.missaoReset,franquias:G.franquias,
     conquistasDesbloqueadas:G.conquistasDesbloqueadas,
     conquistasSecretasDesbloqueadas:G.conquistasSecretasDesbloqueadas,
     upgradesComprados:G.upgradesComprados,
@@ -1697,6 +1789,8 @@ function aplicarSave(s){
   G.nickname=s.nickname||G.nickname;G.avatar=s.avatar||'🧑‍💼';
   G.presenteDia=s.presenteDia||'';G.presenteStreak=s.presenteStreak||0;
   G.extrato=s.extrato||[];
+  G.historiaImperio=s.historiaImperio||[];
+  G.historiaImperio=s.historiaImperio||[];
   G.missoes=s.missoes||[];G.missaoReset=s.missaoReset||0;G.franquias=s.franquias||[];
   G.conquistasDesbloqueadas=s.conquistasDesbloqueadas||[];
   G.conquistasSecretasDesbloqueadas=s.conquistasSecretasDesbloqueadas||[];
@@ -1901,7 +1995,8 @@ function renderNegocios(){
   const anims={cachorro:'🔥',acai:'🍃',lavajato:'💧',lanchonete:'🔥',sorveteria:'❄️',mercadinho:'📦',farmacia:'💊',posto:'⛽',shopping:'🛍️',construtora:'🔨',banco_neg:'💳',aeroporto:'🛫'};
   G.negocios.forEach((n,i)=>{
     const custo=calcCusto(n);const pode=G.dinheiro>=custo;
-    const bloq=i>0&&G.negocios[i-1].qtd===0;
+    const bloq=n.secreto?false:(i>0&&G.negocios[i-1].qtd===0);
+    if(n.secreto&&n.qtd===0&&G.totalGanho<10000) return; // só aparece pra quem tem R$10k+
     const pct=n.qtd>0?(n.prog/n.ciclo*100):0;
     const temG=G.gerentes.find(g=>g.negocio===n.id&&g.contratado);
     const isFranquia=n.qtd>=20;
@@ -2171,47 +2266,6 @@ function jogarSocio(){
   },1500);
 }
 
-function dispararEvento(){
-  const h3=HABILIDADES.find(x=>x.tipo==='carisma');
-  const bonsChance=0.4+(h3?h3.nivel*0.05:0);
-  const ruins=G.eventoPool.filter(e=>e.tipo==='ruim');
-  const bons=G.eventoPool.filter(e=>e.tipo==='bom');
-  const ev=Math.random()<bonsChance?bons[Math.floor(Math.random()*bons.length)]:ruins[Math.floor(Math.random()*ruins.length)];
-  const hora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  G.historico.push({txt:ev.txt,tipo:ev.tipo,hora});if(G.historico.length>20)G.historico.shift();
-  atualizarMissoes('evento');
-  if(G.seguroAtivo&&ev.tipo==='ruim'&&ev.efeito!=='socio'){addEventoBox({txt:'🛡️ Bloqueado pelo seguro!',tipo:'bom'});return;}
-  if(ev.efeito==='fiscalizacao'){
-    const multa=calcRPS()*30;
-    G.dinheiro=Math.max(0,G.dinheiro-multa);
-    // Congelar negócio aleatório por 2 minutos
-    const abertos=G.negocios.filter(n=>n.qtd>0);
-    if(abertos.length>0){
-      const alvo=abertos[Math.floor(Math.random()*abertos.length)];
-      const rpsOriginal=alvo.rps;
-      alvo.rps=0;
-      mostrarNotif('🕵️ Fiscalização! -'+fmt(multa)+' e '+alvo.icon+' '+alvo.nome+' fechado por 2min!');
-      shakeTela();flashBrilho('#E24B4A');SOM.fiscalizacao();
-      setTimeout(()=>{alvo.rps=rpsOriginal;mostrarNotif('✅ '+alvo.nome+' reabriu!');},120000);
-    }else{
-      mostrarNotif('🕵️ Fiscalização! Multa: -'+fmt(multa));shakeTela();
-    }
-    return;
-  }
-  if(ev.efeito==='socio'){document.getElementById('socio-desc').textContent='Cara = dobra, coroa = perde tudo!';document.getElementById('socio-moeda').textContent='🪙';document.getElementById('socio-btns').innerHTML='<button class="modal-btn gold" onclick="jogarSocio()">🤑 Tentar!</button><button class="modal-btn secondary" onclick="fecharModal(\'modal-socio\')">😅 Recusar</button>';abrirModal('modal-socio');return;}
-  if(ev.efeito==='leilao'){iniciarLeilao();return;}
-  if(ev.efeito==='vip'){const temM=FUNCIONARIOS.find(f=>f.id==='marqueteiro'&&f.contratado);const b=calcRPS()*30*(temM?2:1);G.dinheiro+=b;G.totalGanho+=b;mostrarNotif('⭐ VIP! +'+fmt(b));spawnMoedas();addEventoBox(ev);return;}
-  if(ev.efeito==='nada'&&Math.random()<0.4){
-    const jornais=['📰 "Inflação bate recorde"','📰 "Novo imposto aprovado"','📰 "Dólar sobe, brasileiro trabalha"','📰 "Empresário '+G.nickname+' expande negócios"'];
-    const box=document.getElementById('eventos-box');const div=document.createElement('div');div.className='jornal-box';div.textContent=jornais[Math.floor(Math.random()*jornais.length)];
-    box.prepend(div);setTimeout(()=>{if(div.parentNode)div.remove();},6000);return;
-  }
-  addEventoBox(ev);
-  if(ev.efeito==='multa')G.dinheiro=Math.max(0,G.dinheiro-(ev.val||0));
-  else if(ev.efeito==='bonus'){const v=(ev.val||0);G.dinheiro+=v;G.totalGanho+=v;}
-  else if(ev.efeito==='chuva'){G.chuvaAtiva=true;setTimeout(()=>{G.chuvaAtiva=false;},(ev.dur||10)*1000);}
-  else if(ev.efeito==='boost'){G.boostAtivo=ev.mult||2;spawnMoedas();let dur=ev.dur||15;const t=setInterval(()=>{dur--;if(dur<=0){G.boostAtivo=1;clearInterval(t);renderNegocios();}},1000);}
-}
 
 function addEventoBox(ev){
   const box=document.getElementById('eventos-box');const div=document.createElement('div');
@@ -2467,7 +2521,7 @@ function loop(now){
   tickExportacao(dt);
   tickMemecoins(dt);
 
-  if(Math.floor(G.tick)%3===0&&Math.floor(G.tick)!==Math.floor(G.tick-dt)){renderDinheiro();renderNegocios();checarConquistas();atualizarMissoes();}
+  if(Math.floor(G.tick)%3===0&&Math.floor(G.tick)!==Math.floor(G.tick-dt)){renderDinheiro();renderNegocios();checarConquistas();atualizarMissoes();verificarMarcosImperio();verificarFalido();}
   if(Math.floor(G.tick)%60===0&&Math.floor(G.tick)!==Math.floor(G.tick-dt)){if(G.negocios.some(n=>n.qtd>0))dispararEvento();}
 
   // Guild contribuição passiva
@@ -2785,6 +2839,15 @@ const MEMECOINS = [
   {id:'brizuela',icon:'🦜',nome:'Brizuela',desc:'Criada por influencer sertanejo',preco:0.001,variacao:0,qtd:0,volatilidade:1.2,pumped:false},
   {id:'capivaracoin',icon:'🐾',nome:'CapivaraCoin',desc:'A moeda mais tranquila do mundo',preco:1,variacao:0,qtd:0,volatilidade:0.4,pumped:false},
   {id:'lulacoin',icon:'🔴',nome:'LulaCoin',desc:'Sobe com escândalo, cai com paz',preco:0.1,variacao:0,qtd:0,volatilidade:1.0,pumped:false},
+  {id:'sheintoken',icon:'📦',nome:'SheinToken',desc:'Chegou em 60 dias ou nunca',preco:0.05,variacao:0,qtd:0,volatilidade:1.5,pumped:false},
+  {id:'coxinhacoin',icon:'🍗',nome:'CoxinhaCoin',desc:'Criada na fila do banco',preco:0.002,variacao:0,qtd:0,volatilidade:2.0,pumped:false},
+  {id:'pixcoin2',icon:'💸',nome:'PixCoin2',desc:'O Pix mas descentralizado',preco:2,variacao:0,qtd:0,volatilidade:0.9,pumped:false},
+  {id:'bolsacoin',icon:'💼',nome:'BolsaCoin',desc:'Sobe na eleição, some depois',preco:0.3,variacao:0,qtd:0,volatilidade:1.8,pumped:false},
+  {id:'pepemei',icon:'🐸',nome:'PEPE MEI',desc:'O sapo mais empreendedor do Brasil',preco:0.0001,variacao:0,qtd:0,volatilidade:1.5,pumped:false},
+  {id:'shitcoin',icon:'💩',nome:'ShitCoin BR',desc:'Literalmente isso mesmo',preco:0.00001,variacao:0,qtd:0,volatilidade:2.0,pumped:false},
+  {id:'sertaocoin',icon:'🤠',nome:'SertãoCoin',desc:'Só sobe no São João',preco:0.05,variacao:0,qtd:0,volatilidade:0.9,pumped:false},
+  {id:'camelcoin',icon:'🐪',nome:'CamelCoin',desc:'Vai devagar mas chega lá',preco:0.3,variacao:0,qtd:0,volatilidade:0.3,pumped:false},
+  {id:'coxinhacoin',icon:'🍗',nome:'CoxinhaCoin',desc:'Volátil igual o preço da coxinha',preco:0.02,variacao:0,qtd:0,volatilidade:1.1,pumped:false},
 ];
 
 let memecoinTick = 0;
@@ -3498,70 +3561,6 @@ function renderCassino() {
   `;
 }
 
-function jogarSlots(aposta) {
-  if (G.dinheiro < aposta) { mostrarNotif('Dinheiro insuficiente!'); return; }
-  if (cassinoRodando) return;
-  cassinoRodando = true;
-  G.dinheiro -= aposta;
-  G.cassinoEstatisticas.jogadas++;
-  G.cassinoEstatisticas.perdas += aposta;
-
-  const slots = document.getElementById('slots-display');
-  const resultado = document.getElementById('slots-resultado');
-  let giros = 0;
-  const maxGiros = 15;
-
-  const intervalo = setInterval(() => {
-    const s1 = capaSlots[Math.floor(Math.random()*capaSlots.length)];
-    const s2 = capaSlots[Math.floor(Math.random()*capaSlots.length)];
-    const s3 = capaSlots[Math.floor(Math.random()*capaSlots.length)];
-    slots.innerHTML = [s1,s2,s3].map(s =>
-      `<div style="font-size:40px;background:var(--bg3);border-radius:8px;padding:8px 16px">${s}</div>`
-    ).join('');
-    giros++;
-    if (giros >= maxGiros) {
-      clearInterval(intervalo);
-      cassinoRodando = false;
-      // Resultado final
-      const r1 = capaSlots[Math.floor(Math.random()*capaSlots.length)];
-      const r2 = capaSlots[Math.floor(Math.random()*capaSlots.length)];
-      const r3 = capaSlots[Math.floor(Math.random()*capaSlots.length)];
-      slots.innerHTML = [r1,r2,r3].map(s =>
-        `<div style="font-size:40px;background:var(--bg3);border-radius:8px;padding:8px 16px">${s}</div>`
-      ).join('');
-
-      let mult = 0;
-      if (r1===r2 && r2===r3) {
-        if (r1==='💎') mult = 50;
-        else if (r1==='7️⃣') mult = 20;
-        else if (r1==='💰') mult = 10;
-        else mult = 5;
-      } else if (r1===r2 || r2===r3 || r1===r3) {
-        mult = 1.5;
-      }
-
-      if (mult > 0) {
-        const ganho = aposta * mult;
-        G.dinheiro += ganho;
-        G.totalGanho += ganho;
-        G.cassinoEstatisticas.ganhos += ganho;
-        G.cassinoEstatisticas.perdas -= aposta;
-        registrarExtrato('Caça-níquel '+(r1===r2&&r2===r3?'JACKPOT':'Par!'), ganho-aposta, '🎰');
-        resultado.textContent = `🎉 ${r1===r2&&r2===r3?'JACKPOT!':'Par!'} +${fmt(ganho)} (${mult}x)`;
-        resultado.style.color = 'var(--green)';
-        SOM.conquista();
-        spawnParticulasDinheiro(window.innerWidth/2, 300, 10);
-        flashBrilho('#cc9');
-      } else {
-        registrarExtrato('Caça-níquel (perdeu)', -aposta, '🎰');
-        resultado.textContent = `😢 Perdeu ${fmt(aposta)}. Tente novamente!`;
-        resultado.style.color = 'var(--red)';
-        SOM.eventoRuim();
-      }
-      renderDinheiro();
-    }
-  }, 80);
-}
 
 function jogarRoleta(cor, aposta) {
   if (G.dinheiro < aposta) { mostrarNotif('Dinheiro insuficiente!'); return; }
@@ -3738,7 +3737,7 @@ async function sabotar(custo, nivel) {
   G.dinheiro -= custo;
   msg.textContent = 'Enviando sabotagem...'; msg.style.color = 'var(--text2)';
 
-  const penalidades = {pequena: 10000, media: 50000, grande: 250000};
+  const penalidades = {pequena: 10000, media: 50000, grande: 250000, fakenews: 0};
   const penalidade = penalidades[nivel];
 
   try {
@@ -3753,6 +3752,7 @@ async function sabotar(custo, nivel) {
       paraUID: targetUID,
       penalidade,
       nivel,
+      fakenews: nivel === 'fakenews',
       ts: firebase.firestore.FieldValue.serverTimestamp(),
       aplicado: false
     });
@@ -3769,23 +3769,6 @@ async function sabotar(custo, nivel) {
   }
 }
 
-async function verificarSabotagens() {
-  if (!currentUser) return;
-  try {
-    const snap = await db.collection('sabotagens')
-      .where('paraUID','==',currentUser.uid)
-      .where('aplicado','==',false)
-      .get();
-    snap.docs.forEach(async doc => {
-      const d = doc.data();
-      G.dinheiro = Math.max(0, G.dinheiro - d.penalidade);
-      registrarExtrato('Sabotagem de '+d.de, -d.penalidade, '💣');
-      mostrarNotif(`💣 ${d.de} te sabotou! -${fmt(d.penalidade)}`);
-      shakeTela(); SOM.fiscalizacao();
-      await doc.ref.update({aplicado: true});
-    });
-  } catch(e){}
-}
 
 function comprarMonopolio(id) {
   const m = MONOPOLIOS_DISPONIVEIS.find(x=>x.id===id);
@@ -4637,10 +4620,11 @@ function trocarSecaoSocial(secao) {
         <div style="font-size:13px;font-weight:500;color:var(--red);margin-bottom:8px">💣 Sabotagem</div>
         <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Mande fiscalização pro rival. Ele perde dinheiro e um negócio fecha!</div>
         <input type="text" id="sabotagem-nick" placeholder="Nickname do alvo">
-        <div style="display:flex;gap:6px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn-small" style="flex:1;color:var(--red);border-color:var(--red)" onclick="sabotar(5000,'pequena')">💣 Pequena (R$5k)</button>
           <button class="btn-small" style="flex:1;color:var(--red);border-color:var(--red)" onclick="sabotar(20000,'media')">💣 Média (R$20k)</button>
           <button class="btn-small" style="flex:1;color:var(--red);border-color:var(--red)" onclick="sabotar(100000,'grande')">💣 Grande (R$100k)</button>
+          <button class="btn-small" style="flex:1;color:var(--purple);border-color:var(--purple)" onclick="sabotar(15000,'fakenews')">📰 Fake News (R$15k)</button>
         </div>
         <div id="sabotagem-msg" style="font-size:11px;margin-top:6px;color:var(--text3)"></div>
       </div>`;
@@ -4652,22 +4636,6 @@ function trocarSecaoSocial(secao) {
 }
 
 // ===== EU - sub-seções =====
-function trocarSecaoEu(secao) {
-  const el = document.getElementById('eu-sub-content');
-  if(!el) return;
-  el.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--text2);font-size:13px">Carregando...</div>';
-  setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
-
-  if(secao==='loja'){ el.innerHTML='<div id="loja-content"></div>'; renderLoja(); }
-  else if(secao==='missoes'){ el.innerHTML='<div id="lista-missoes"></div>'; renderMissoes(); }
-  else if(secao==='extrato'){ el.innerHTML='<div id="extrato-content"></div>'; renderExtrato(); }
-  else if(secao==='stats'){ el.innerHTML='<div id="stats-content"></div>'; renderStats(); }
-  else if(secao==='historico'){ el.innerHTML='<p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Últimos 20 eventos.</p><div id="lista-historico"></div>'; renderHistorico(); }
-  else if(secao==='molduras'){
-    el.innerHTML='<div id="social-content"></div>';
-    renderSocial();
-  }
-}
 
 function atualizarTelaEu() {
   const liga = getLiga();
@@ -4738,6 +4706,287 @@ function inicializarBottomNav(){
   irParaTela('negocios');
   atualizarTelaEu();
 }
+
+
+// ===================================================
+// HISTÓRIA DO IMPÉRIO
+// ===================================================
+if(!G.historiaImperio) G.historiaImperio = [];
+
+function registrarHistoria(txt, icon='🏆') {
+  if(!G.historiaImperio) G.historiaImperio = [];
+  const agora = new Date();
+  const data = agora.toLocaleDateString('pt-BR');
+  const hora = agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  G.historiaImperio.push({txt, icon, data, hora, ts: Date.now()});
+  if(G.historiaImperio.length > 50) G.historiaImperio.shift();
+}
+
+// Verificar marcos automaticamente no loop
+let marcosVerificados = {};
+function verificarMarcosImperio() {
+  const marcos = [
+    {id:'m_100', val:100, txt:'Ganhou seus primeiros R$100!', icon:'💵'},
+    {id:'m_1k', val:1000, txt:'Chegou ao primeiro R$1.000!', icon:'💰'},
+    {id:'m_10k', val:10000, txt:'R$10.000 no bolso!', icon:'🤑'},
+    {id:'m_100k', val:100000, txt:'Centena de milhar! R$100.000!', icon:'💎'},
+    {id:'m_1m', val:1000000, txt:'MILIONÁRIO! R$1.000.000!', icon:'👑'},
+    {id:'m_10m', val:10000000, txt:'R$10 milhões! Império crescendo!', icon:'🏆'},
+    {id:'m_100m', val:100000000, txt:'R$100 milhões! Magnata!', icon:'🌟'},
+    {id:'m_1b', val:1000000000, txt:'BILIONÁRIO! R$1 Bilhão!', icon:'💜'},
+    {id:'neg_5', neg:5, txt:'5 negócios abertos! Expandindo!', icon:'🏪'},
+    {id:'neg_10', neg:10, txt:'10 negócios! Empresário raiz!', icon:'🏬'},
+    {id:'neg_todos', neg:12, txt:'Todos os 12 negócios principais abertos!', icon:'✈️'},
+    {id:'clique_1k', cliques:1000, txt:'1.000 cliques! Mão de ferro!', icon:'👆'},
+    {id:'clique_10k', cliques:10000, txt:'10.000 cliques! Workaholic!', icon:'⚡'},
+    {id:'rep_5', rep:5, txt:'Reputação nível 5! Empresário do Ano!', icon:'⭐'},
+  ];
+
+  marcos.forEach(m => {
+    if(marcosVerificados[m.id]) return;
+    let atingido = false;
+    if(m.val && G.totalGanho >= m.val) atingido = true;
+    if(m.neg && G.negocios.filter(n=>n.qtd>0).length >= m.neg) atingido = true;
+    if(m.cliques && G.cliques >= m.cliques) atingido = true;
+    if(m.rep && G.repNivel >= m.rep) atingido = true;
+    if(atingido) {
+      marcosVerificados[m.id] = true;
+      registrarHistoria(m.txt, m.icon);
+      mostrarNotif(m.icon+' '+m.txt);
+      SOM.conquista();
+      spawnConfete();
+    }
+  });
+}
+
+
+
+// ===================================================
+// FAKE NEWS — NOVA SABOTAGEM
+// ===================================================
+let sabotadorContador = 0;
+
+const FAKE_NEWS = [
+  'Acharam barata no produto!',
+  'Dono foi preso pela Receita Federal!',
+  'Loja vendendo produto falsificado!',
+  'Cliente passou mal e foi pro hospital!',
+  'Funcionário postou vídeo constrangedor!',
+  'Negócio investigado por lavagem!',
+];
+
+async function enviarFakeNews() {
+  if(!currentUser && !semConta) { mostrarNotif('Faça login para usar!'); return; }
+  const nick = document.getElementById('fakenews-nick')?.value?.trim();
+  const msg = document.getElementById('fakenews-msg');
+  if(!nick){ if(msg) msg.textContent='Digite o nickname!'; return; }
+  if(nick === G.nickname){ if(msg) msg.textContent='Não pode mandar pra si mesmo!'; return; }
+  const custo = 15000;
+  if(G.dinheiro < custo){ if(msg) msg.textContent='Precisa de R$15.000!'; return; }
+
+  G.dinheiro -= custo;
+  const noticia = FAKE_NEWS[Math.floor(Math.random()*FAKE_NEWS.length)];
+  if(msg) msg.textContent = 'Enviando fake news...';
+  msg.style.color = 'var(--text2)';
+
+  try {
+    const snap = await db.collection('usuarios').where('nickname','==',nick).limit(1).get();
+    if(snap.empty){ if(msg){msg.textContent='Jogador não encontrado!';msg.style.color='var(--red)';} G.dinheiro+=custo; return; }
+    const targetUID = snap.docs[0].id;
+    await db.collection('sabotagens').add({
+      de: G.nickname,
+      para: nick,
+      paraUID: targetUID,
+      tipo: 'fakenews',
+      noticia,
+      penalidade: 0,
+      repPenalidade: 30,
+      nivel: 'fakenews',
+      ts: firebase.firestore.FieldValue.serverTimestamp(),
+      aplicado: false
+    });
+    sabotadorContador++;
+    if(sabotadorContador >= 5 && !G.conquistasSecretasDesbloqueadas.includes('cs11')) {
+      G.conquistasSecretasDesbloqueadas.push('cs11');
+      checarConquistasSecretas();
+    }
+    if(!G.conquistasSecretasDesbloqueadas.includes('cs12')) {
+      G.conquistasSecretasDesbloqueadas.push('cs12');
+      checarConquistasSecretas();
+    }
+    if(msg){ msg.textContent='"'+noticia+'" enviado pra '+nick+'! 📰'; msg.style.color='var(--green)'; }
+    mostrarNotif('📰 Fake news enviada! A reputação deles vai cair!');
+    renderDinheiro();
+  } catch(e) {
+    if(msg){ msg.textContent='Erro ao enviar.'; msg.style.color='var(--red)'; }
+    G.dinheiro += custo;
+  }
+}
+
+// Aplicar fake news recebida (na verificarSabotagens)
+const _verificarSabotagens_orig = verificarSabotagens;
+async function verificarSabotagens() {
+  if(!currentUser) return;
+  try {
+    const snap = await db.collection('sabotagens')
+      .where('paraUID','==',currentUser.uid)
+      .where('aplicado','==',false)
+      .get();
+    snap.docs.forEach(async doc => {
+      const d = doc.data();
+      if(d.tipo === 'fakenews') {
+        G.reputacao = Math.max(0, G.reputacao - (d.repPenalidade||30));
+        mostrarNotif('📰 Fake news de '+d.de+'! -'+d.repPenalidade+' reputação! "'+d.noticia+'"');
+        shakeTela(); SOM.eventoRuim();
+      } else {
+        G.dinheiro = Math.max(0, G.dinheiro - d.penalidade);
+        registrarExtrato('Sabotagem de '+d.de, -d.penalidade, '💣');
+        mostrarNotif('💣 '+d.de+' te sabotou! -'+fmt(d.penalidade));
+        shakeTela(); SOM.fiscalizacao();
+      }
+      await doc.ref.update({aplicado: true});
+    });
+  } catch(e){}
+}
+
+// Conquistas secretas - fiscalização
+let fiscalizacaoCount = 0;
+
+// Conquista cassino perdedor
+let cassinoPerdas = 0;
+
+// Conquista falido cs10
+function verificarFalido() {
+  if(G.dinheiro <= 0 && G.negocios.some(n=>n.qtd>0) && !G.conquistasSecretasDesbloqueadas.includes('cs10')){
+    G.conquistasSecretasDesbloqueadas.push('cs10');
+    checarConquistasSecretas();
+    mostrarNotif('💸 Faliu! Mas pelo menos ganhou uma conquista...');
+  }
+}
+
+// Conquista cachorrão de ouro cs8
+let ganhoCachorro = 0;
+function verificarCachorraoOuro(ganho) {
+  const n = G.negocios.find(x=>x.id==='cachorro');
+  if(n && n.qtd > 0 && G.negocios.filter(x=>x.id!=='cachorro'&&x.qtd>0).length===0){
+    ganhoCachorro += ganho;
+    if(ganhoCachorro >= 1000000 && !G.conquistasSecretasDesbloqueadas.includes('cs8')){
+      G.conquistasSecretasDesbloqueadas.push('cs8');
+      checarConquistasSecretas();
+    }
+  }
+}
+
+// Adicionar Historia do Imperio no trocarSecaoEu
+const _trocarSecaoEu_orig = trocarSecaoEu;
+function trocarSecaoEu(secao) {
+  if(secao === 'historia'){
+    const el = document.getElementById('eu-sub-content');
+    if(el) renderHistoriaImperio();
+    return;
+  }
+  _trocarSecaoEu_orig(secao);
+}
+
+
+// ===================================================
+// HISTÓRIA DO IMPÉRIO
+// ===================================================
+if(!G.historiaImperio) G.historiaImperio = [];
+
+const MARCOS_HISTORIA = [
+  {id:'h_100',desc:'Ganhou seus primeiros R$100!',icon:'💵',check:g=>g.totalGanho>=100},
+  {id:'h_1k',desc:'Chegou a R$1.000!',icon:'💰',check:g=>g.totalGanho>=1000},
+  {id:'h_10k',desc:'Cruzou a marca de R$10.000!',icon:'🤑',check:g=>g.totalGanho>=10000},
+  {id:'h_100k',desc:'R$100.000 acumulados!',icon:'💎',check:g=>g.totalGanho>=100000},
+  {id:'h_1m',desc:'MILIONÁRIO! R$1.000.000!',icon:'👑',check:g=>g.totalGanho>=1000000},
+  {id:'h_10m',desc:'R$10 Milhões! Lenda do MEI!',icon:'🏆',check:g=>g.totalGanho>=10000000},
+  {id:'h_1b',desc:'R$1 BILHÃO! Impossível!',icon:'🌟',check:g=>g.totalGanho>=1000000000},
+  {id:'h_primeiro_neg',desc:'Abriu seu primeiro negócio!',icon:'🏪',check:g=>g.negocios.some(n=>n.qtd>0)},
+  {id:'h_franquia',desc:'Primeira franquia conquistada!',icon:'🏆',check:g=>g.franquias?.length>0},
+  {id:'h_guild',desc:'Entrou em uma guild!',icon:'🏰',check:g=>!!g.guildId},
+  {id:'h_cassino_ganhou',desc:'Ganhou no cassino!',icon:'🎰',check:g=>(g.cassinoEstatisticas?.ganhos||0)>0},
+  {id:'h_falido',desc:'Ficou com menos de R$1... e sobreviveu!',icon:'😅',check:g=>g.totalGanho>1000&&g.dinheiro<1},
+  {id:'h_nivel5',desc:'Alcançou Nível 5 — Gerente Geral!',icon:'⚡',check:g=>g.xpNivel>=5},
+  {id:'h_nivel10',desc:'Nível MÁXIMO — Imperador do MEI!',icon:'🌟',check:g=>g.xpNivel>=10},
+  {id:'h_sabotou',desc:'Sabotou um rival pela primeira vez!',icon:'💣',check:g=>g.conquistasSecretasDesbloqueadas?.includes('cs2')},
+  {id:'h_agua_praia',desc:'Abriu venda de água na praia kkk',icon:'🏖️',check:g=>g.negocios.find(n=>n.id==='agua_praia')?.qtd>0},
+  {id:'h_shein',desc:'Importou da Shein (vai chegar até 2050)',icon:'📦',check:g=>g.negocios.find(n=>n.id==='shein')?.qtd>0},
+  {id:'h_aeroporto',desc:'Comprou um AEROPORTO!',icon:'✈️',check:g=>g.negocios.find(n=>n.id==='aeroporto')?.qtd>0},
+];
+
+function checarHistoriaImperio() {
+  if(!G.historiaImperio) G.historiaImperio = [];
+  const ids = G.historiaImperio.map(h=>h.id);
+  MARCOS_HISTORIA.forEach(m => {
+    if(!ids.includes(m.id) && m.check(G)) {
+      const agora = new Date();
+      const entrada = {
+        id: m.id,
+        desc: m.desc,
+        icon: m.icon,
+        data: agora.toLocaleDateString('pt-BR'),
+        hora: agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+        total: G.totalGanho,
+      };
+      G.historiaImperio.push(entrada);
+      mostrarNotif('📖 História: '+m.icon+' '+m.desc);
+    }
+  });
+}
+
+function renderHistoriaImperio() {
+  const el = document.getElementById('historia-content');
+  if(!el) return;
+
+  if(!G.historiaImperio || G.historiaImperio.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text3)"><div style="font-size:32px;margin-bottom:8px">📖</div><div>Seu império ainda não tem história.<br>Comece a jogar!</div></div>';
+    return;
+  }
+
+  const itens = [...G.historiaImperio].reverse();
+  let html = '<div style="font-size:12px;color:var(--text2);margin-bottom:1rem">'+itens.length+' marcos registrados no seu império</div>';
+
+  itens.forEach((h,i) => {
+    const isUltimo = i === 0;
+    html += `
+      <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);${isUltimo?'border-color:var(--green)':''}">
+        <div style="font-size:24px;min-width:36px;text-align:center">${h.icon}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500;color:${isUltimo?'var(--green)':'var(--text)'}">${h.desc}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${h.data} às ${h.hora} · patrimônio: ${fmt(h.total)}</div>
+        </div>
+        ${isUltimo?'<div style="font-size:10px;color:var(--green);font-weight:500">RECENTE</div>':''}
+      </div>
+    `;
+  });
+
+  // Botão de compartilhar
+  html += `
+    <div style="margin-top:1rem;text-align:center">
+      <button class="modal-btn" onclick="compartilharHistoria()" style="background:var(--purple)">
+        📱 Compartilhar no TikTok/Threads
+      </button>
+    </div>
+  `;
+
+  el.innerHTML = html;
+}
+
+function compartilharHistoria() {
+  if(!G.historiaImperio || G.historiaImperio.length === 0) return;
+  const ultimo = G.historiaImperio[G.historiaImperio.length-1];
+  const texto = `🌭 MEI Simulator\n${ultimo.icon} ${ultimo.desc}\n💰 Patrimônio: ${fmt(G.totalGanho)}\n👤 ${G.nickname}\n🔗 onlytokra.github.io/mei-simulator`;
+  if(navigator.share) {
+    navigator.share({title:'MEI Simulator', text:texto});
+  } else {
+    navigator.clipboard.writeText(texto).then(()=>mostrarNotif('📋 Copiado! Cole no TikTok ou Threads!'));
+  }
+}
+
+// Verificar marcos a cada 10 segundos no loop
+let historiaTick = 0;
+const _loopOriginal_historia = loop;
 
 
 </script>
