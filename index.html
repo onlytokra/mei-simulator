@@ -15,7 +15,7 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);transition:ba
 #game{padding:1rem;max-width:700px;margin:0 auto;padding-bottom:4rem;}
 .header{text-align:center;padding:0.5rem 0 1rem;border-bottom:1px solid var(--border);margin-bottom:1rem;}
 .header-btns{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:8px;}
-.dinheiro{font-size:28px;font-weight:500;color:var(--text);}
+.dinheiro{font-size:28px;font-weight:500;color:var(--text);transition:transform 0.15s ease;}
 .por-segundo{font-size:13px;color:var(--text2);margin-top:2px;}
 .negocio-card{background:var(--bg2);border-radius:12px;padding:0.75rem 1rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:12px;cursor:pointer;border:1px solid var(--border);transition:border-color 0.15s;position:relative;overflow:hidden;}
 .negocio-card:hover{border-color:var(--border2);}
@@ -291,6 +291,22 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   </div>
 </div>
 
+<!-- MODAL TUTORIAL -->
+<div id="modal-tutorial" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <div class="modal-titulo">🎓 Tutorial Rápido</div>
+    <div class="modal-sub">Aprenda o básico em 1 minuto!</div>
+    <div id="tutorial-passo" style="min-height:180px"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem">
+      <div id="tutorial-dots" style="display:flex;gap:6px"></div>
+      <div style="display:flex;gap:8px">
+        <button class="modal-btn secondary" id="btn-tut-pular" onclick="fecharModal('modal-tutorial')" style="margin-top:0;width:auto;padding:8px 14px">Pular</button>
+        <button class="modal-btn" id="btn-tut-prox" onclick="proximoPassoTutorial()" style="margin-top:0;width:auto;padding:8px 14px">Próximo →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL CONQUISTAS -->
 <div id="modal-conquistas" class="modal-overlay" style="display:none">
   <div class="modal">
@@ -476,6 +492,7 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
     <!-- MENU MAIS -->
     <div class="mais-menu" id="mais-menu">
       <button class="mais-menu-btn" onclick="abrirConquistas();toggleMaisMenu()">🏆 Conquistas</button>
+      <button class="mais-menu-btn" onclick="abrirTutorial();toggleMaisMenu()">🎓 Tutorial</button>
       <button class="mais-menu-btn" onclick="abrirModal('modal-patch');toggleMaisMenu()">📋 Atualizações</button>
       <button class="mais-menu-btn" onclick="abrirShare();toggleMaisMenu()">📸 Compartilhar</button>
       <button class="mais-menu-btn" onclick="abrirModal('modal-presente-amigo');toggleMaisMenu()">🎁 Presente</button>
@@ -505,6 +522,7 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   </div>
 
   <!-- BARRA DE MÚSICA -->
+  <div id="yt-player-div" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px"></div>
   <div class="musica-bar" id="musica-bar">
     <span>🎵</span>
     <span style="flex:1" id="musica-nome">Lo-fi Brasileiro — Chill Beats</span>
@@ -991,6 +1009,7 @@ function renderMercado(){
 
 let mnContador=0;
 function usarMercadoNegro(id){
+  if(G.emprestimo){mostrarNotif('🚫 Quite seu empréstimo antes de usar o mercado negro!');return;}
   const item=MERCADO_NEGRO.find(x=>x.id===id);
   if(!item||G.dinheiro<item.custo){mostrarNotif('Dinheiro insuficiente!');return;}
   G.dinheiro-=item.custo;
@@ -999,8 +1018,19 @@ function usarMercadoNegro(id){
     G.conquistasSecretasDesbloqueadas.push('cs2');checarConquistasSecretas();
   }
   if(Math.random()<item.risco){
-    mostrarNotif('🕵️ Fiscalização pelo mercado negro!');
-    setTimeout(()=>iniciarFiscalizacao(),500);
+    const multaMN=calcRPS()*60;
+    G.dinheiro=Math.max(0,G.dinheiro-multaMN);
+    const abertosMN=G.negocios.filter(n=>n.qtd>0);
+    if(abertosMN.length>0){
+      const alvoMN=abertosMN[Math.floor(Math.random()*abertosMN.length)];
+      const rpsOrigMN=alvoMN.rps;
+      alvoMN.rps=0;
+      mostrarNotif('🕵️ FLAGRADO! -'+fmt(multaMN)+' e '+alvoMN.icon+' '+alvoMN.nome+' fechado por 5min!');
+      shakeTela();flashBrilho('#E24B4A');SOM.fiscalizacao();
+      setTimeout(()=>{alvoMN.rps=rpsOrigMN;mostrarNotif('✅ '+alvoMN.nome+' reabriu!');},300000);
+    }else{
+      mostrarNotif('🕵️ FLAGRADO! Multa: -'+fmt(multaMN));shakeTela();
+    }
     return;
   }
   if(item.efeito==='boost_mn'){G.boostMN=item.mult;setTimeout(()=>{G.boostMN=1;},item.dur*1000);mostrarNotif(item.icon+' Ativado! +'+((item.mult-1)*100)+'% por '+(item.dur/60).toFixed(0)+'min');}
@@ -1419,6 +1449,7 @@ async function iniciarJogo(user,isNovo){
   verificarPresentes();
   buscarCambio();
   setTimeout(()=>verificarSabotagens(), 2000);
+  setTimeout(()=>verificarPrimeiroLogin(), 1000);
   iniciarLoop();
 }
 
@@ -1649,7 +1680,14 @@ function calcCusto(n){
 
 // ===== RENDERS =====
 function renderDinheiro(){
-  document.getElementById('dinheiro').textContent=fmt(G.dinheiro);
+  // Animação suave do contador
+  const dinheiroEl=document.getElementById('dinheiro');
+  if(dinheiroEl){
+    const alvo=G.dinheiro;
+    dinheiroEl.textContent=fmt(alvo);
+    dinheiroEl.style.transform='scale(1.02)';
+    setTimeout(()=>{if(dinheiroEl)dinheiroEl.style.transform='scale(1)';},150);
+  }
   document.getElementById('rps').textContent=fmt(calcRPS())+' / seg';
   document.getElementById('stat-total').textContent=fmt(G.totalGanho);
   document.getElementById('stat-cliques').textContent=G.cliques.toLocaleString('pt-BR');
@@ -1778,8 +1816,13 @@ function renderBanco(){
   const el=document.getElementById('lista-banco');el.innerHTML='';
   if(G.seguroAtivo){const s=document.createElement('div');s.className='seguro-ativo';s.textContent='🛡️ Seguro ativo — '+Math.ceil(G.seguroDuracao-G.seguroTick)+'s';el.appendChild(s);}
   else{const sd=document.createElement('div');sd.className='card';sd.innerHTML=`<div class="card-row"><div style="font-size:24px">🛡️</div><div class="card-info"><div class="card-nome">Seguro Empresarial</div><div class="card-desc">Protege contra eventos ruins por 2 minutos</div></div><button class="btn-small" style="color:var(--blue);border-color:var(--blue)" onclick="comprarSeguro()">R$5.000</button></div>`;el.appendChild(sd);}
-  if(G.emprestimo){const d=document.createElement('div');d.className='card';d.style='border-color:var(--red)';d.innerHTML=`<div style="font-size:13px;font-weight:500;color:var(--red)">⚠️ Empréstimo ativo</div><div style="font-size:12px;color:var(--text2);margin-top:4px">Restante: <strong style="color:var(--red)">${fmt(G.emprestimo.restante)}</strong></div>`;el.appendChild(d);}
-  else{[[500,'R$500'],[4000,'R$4k'],[40000,'R$40k'],[400000,'R$400k']].forEach(([v,l])=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:13px;font-weight:500;color:var(--text)">💸 ${l}</div><div style="font-size:11px;color:var(--text2)">${fmt(v*1.5)} com juros</div></div><button class="btn-small" style="color:var(--orange);border-color:var(--orange)" onclick="pegarEmprestimo(${v})">Pegar</button></div>`;el.appendChild(d);});}
+  if(G.emprestimo){const d=document.createElement('div');d.className='card';d.style='border-color:var(--red)';d.innerHTML=`
+    <div style="font-size:13px;font-weight:500;color:var(--red)">⚠️ Empréstimo ativo</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:4px">Restante: <strong style="color:var(--red)">${fmt(G.emprestimo.restante)}</strong></div>
+    <div style="font-size:11px;color:var(--red);margin-top:4px">📉 Sua renda está reduzida em 25% até quitar!</div>
+    <div style="font-size:11px;color:var(--red)">🚫 Mercado negro e imóveis bloqueados!</div>
+  `;el.appendChild(d);}
+  else{[[200,'R$200'],[1500,'R$1.5k'],[15000,'R$15k'],[100000,'R$100k']].forEach(([v,l])=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:13px;font-weight:500;color:var(--text)">💸 ${l}</div><div style="font-size:11px;color:var(--text2)">${fmt(v*1.5)} com juros</div></div><button class="btn-small" style="color:var(--orange);border-color:var(--orange)" onclick="pegarEmprestimo(${v})">Pegar</button></div>`;el.appendChild(d);});}
 }
 
 function renderHistorico(){
@@ -1870,7 +1913,7 @@ function venderAcao(aid){
 
 function pegarEmprestimo(val){
   if(G.emprestimo){mostrarNotif('Já tem empréstimo!');return;}
-  G.emprestimo={original:val,restante:val*1.5,juros:0.05};G.dinheiro+=val;
+  G.emprestimo={original:val,restante:val*2,juros:0.08};G.dinheiro+=val;
   mostrarNotif('Empréstimo de '+fmt(val)+'! 💸');renderBanco();
 }
 
@@ -1948,7 +1991,23 @@ function dispararEvento(){
   G.historico.push({txt:ev.txt,tipo:ev.tipo,hora});if(G.historico.length>20)G.historico.shift();
   atualizarMissoes('evento');
   if(G.seguroAtivo&&ev.tipo==='ruim'&&ev.efeito!=='socio'){addEventoBox({txt:'🛡️ Bloqueado pelo seguro!',tipo:'bom'});return;}
-  if(ev.efeito==='fiscalizacao'){const multa=calcRPS()*10;G.dinheiro=Math.max(0,G.dinheiro-multa);mostrarNotif('🕵️ Fiscalização! Multa: -'+fmt(multa));shakeTela();return;}
+  if(ev.efeito==='fiscalizacao'){
+    const multa=calcRPS()*30;
+    G.dinheiro=Math.max(0,G.dinheiro-multa);
+    // Congelar negócio aleatório por 2 minutos
+    const abertos=G.negocios.filter(n=>n.qtd>0);
+    if(abertos.length>0){
+      const alvo=abertos[Math.floor(Math.random()*abertos.length)];
+      const rpsOriginal=alvo.rps;
+      alvo.rps=0;
+      mostrarNotif('🕵️ Fiscalização! -'+fmt(multa)+' e '+alvo.icon+' '+alvo.nome+' fechado por 2min!');
+      shakeTela();flashBrilho('#E24B4A');SOM.fiscalizacao();
+      setTimeout(()=>{alvo.rps=rpsOriginal;mostrarNotif('✅ '+alvo.nome+' reabriu!');},120000);
+    }else{
+      mostrarNotif('🕵️ Fiscalização! Multa: -'+fmt(multa));shakeTela();
+    }
+    return;
+  }
   if(ev.efeito==='socio'){document.getElementById('socio-desc').textContent='Cara = dobra, coroa = perde tudo!';document.getElementById('socio-moeda').textContent='🪙';document.getElementById('socio-btns').innerHTML='<button class="modal-btn gold" onclick="jogarSocio()">🤑 Tentar!</button><button class="modal-btn secondary" onclick="fecharModal(\'modal-socio\')">😅 Recusar</button>';abrirModal('modal-socio');return;}
   if(ev.efeito==='leilao'){iniciarLeilao();return;}
   if(ev.efeito==='vip'){const temM=FUNCIONARIOS.find(f=>f.id==='marqueteiro'&&f.contratado);const b=calcRPS()*30*(temM?2:1);G.dinheiro+=b;G.totalGanho+=b;mostrarNotif('⭐ VIP! +'+fmt(b));spawnMoedas();addEventoBox(ev);return;}
@@ -2216,7 +2275,10 @@ function loop(now){
   // Empréstimo
   if(G.emprestimo){
     G.emprestimo.restante+=G.emprestimo.restante*(G.emprestimo.juros/60)*dt;
-    const pag=Math.min(ganho*0.3,G.emprestimo.restante);G.emprestimo.restante-=pag;G.dinheiro-=pag;
+    // Dívida penaliza renda: -25% enquanto devendo
+  const fatorDivida = G.emprestimo ? 0.75 : 1;
+  const pagBase = ganho * fatorDivida;
+  const pag=Math.min(pagBase*0.3,G.emprestimo.restante);G.emprestimo.restante-=pag;G.dinheiro-=pag;
     if(G.emprestimo.restante<=1){G.emprestimo=null;mostrarNotif('Empréstimo quitado! 🎉');}
   }
 
@@ -2380,6 +2442,7 @@ function renderImoveis(){
 }
 
 function comprarImovel(id){
+  if(G.emprestimo){mostrarNotif('🚫 Quite seu empréstimo antes de comprar imóveis!');return;}
   const t = IMOVEIS_TIPOS.find(x=>x.id===id);
   if(!t) return;
   const preco = Math.ceil(t.custo * imoveisMercadoMult * G.inflacaoMult);
@@ -3975,48 +4038,69 @@ function abrirMeuPerfil() {
 }
 
 // ===== MÚSICA DE FUNDO =====
+// Músicas via YouTube embed (sem CORS, funciona em qualquer browser)
 const MUSICAS = [
-  {nome:'Lo-fi Brasileiro', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
-  {nome:'Bossa Nova Chill', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'},
-  {nome:'Samba Instrumental', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'},
+  {nome:'Lo-fi Chill Beats', ytId:'jfKfPfyJRdk'},
+  {nome:'Bossa Nova Instrumental', ytId:'5yx6BWlEVcY'},
+  {nome:'Brasil Jazz Lounge', ytId:'Dx5qFachd3A'},
 ];
 
 let musicaIdx = 0;
-let musicaAudio = null;
 let musicaTocando = false;
+let ytPlayer = null;
+let ytReady = false;
 
-function iniciarMusica() {
-  if (!musicaAudio) {
-    musicaAudio = new Audio();
-    musicaAudio.volume = 0.25;
-    musicaAudio.loop = true;
-    musicaAudio.src = MUSICAS[musicaIdx].url;
-    musicaAudio.onended = () => mudarMusica(1);
-  }
+function carregarYouTubeAPI() {
+  if (document.getElementById('yt-script')) return;
+  const tag = document.createElement('script');
+  tag.id = 'yt-script';
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+}
+
+function onYouTubeIframeAPIReady() {
+  ytReady = true;
+  const div = document.getElementById('yt-player-div');
+  if (!div) return;
+  ytPlayer = new YT.Player('yt-player-div', {
+    height:'1', width:'1',
+    videoId: MUSICAS[musicaIdx].ytId,
+    playerVars:{autoplay:0, loop:1, controls:0, disablekb:1},
+    events:{
+      onReady: () => { if(musicaTocando) ytPlayer.playVideo(); },
+      onStateChange: (e) => { if(e.data===0) mudarMusica(1); }
+    }
+  });
 }
 
 function toggleMusica() {
-  iniciarMusica();
+  carregarYouTubeAPI();
   const btn = document.getElementById('btn-musica');
-  if (musicaTocando) {
-    musicaAudio.pause();
-    musicaTocando = false;
-    if (btn) btn.textContent = '▶️';
-  } else {
-    musicaAudio.play().catch(()=>{});
+  if (!ytReady) {
+    mostrarNotif('Carregando player...');
     musicaTocando = true;
-    if (btn) btn.textContent = '⏸️';
+    setTimeout(()=>{if(ytPlayer)ytPlayer.playVideo();},2000);
+    if(btn) btn.textContent='⏸️';
+    return;
+  }
+  if (musicaTocando) {
+    ytPlayer?.pauseVideo();
+    musicaTocando = false;
+    if(btn) btn.textContent='▶️';
+  } else {
+    ytPlayer?.playVideo();
+    musicaTocando = true;
+    if(btn) btn.textContent='⏸️';
   }
 }
 
 function mudarMusica(dir) {
   musicaIdx = (musicaIdx + dir + MUSICAS.length) % MUSICAS.length;
   const nome = document.getElementById('musica-nome');
-  const btn = document.getElementById('btn-musica');
-  if (nome) nome.textContent = MUSICAS[musicaIdx].nome;
-  if (musicaAudio) {
-    musicaAudio.src = MUSICAS[musicaIdx].url;
-    if (musicaTocando) musicaAudio.play().catch(()=>{});
+  if(nome) nome.textContent = MUSICAS[musicaIdx].nome;
+  if(ytPlayer && ytReady) {
+    ytPlayer.loadVideoById(MUSICAS[musicaIdx].ytId);
+    if(!musicaTocando) ytPlayer.pauseVideo();
   }
 }
 
@@ -4075,6 +4159,110 @@ function atualizarPerfilTopo() {
   if (titulo) {
     if (G.titulo) titulo.textContent = ' · ' + G.titulo;
     else titulo.textContent = '';
+  }
+}
+
+
+// ===== TUTORIAL =====
+const TUTORIAL_PASSOS = [
+  {
+    titulo: '🌭 Bem-vindo ao MEI Simulator!',
+    texto: 'Você começa como um humilde vendedor de cachorro-quente e vai crescer até ter um império de negócios!',
+    dica: '💡 O objetivo é acumular dinheiro, desbloquear negócios e subir no ranking global.',
+    icon: '🌭'
+  },
+  {
+    titulo: '👆 Trabalhe manualmente',
+    texto: 'Clique no botão "Trabalhar manualmente" pra ganhar dinheiro. Clique rápido pra ativar o COMBO e multiplicar seus ganhos!',
+    dica: '💡 Combo máximo: 3x. Clique rápido sem parar pra manter o combo ativo.',
+    icon: '⚡'
+  },
+  {
+    titulo: '🏪 Compre negócios',
+    texto: 'Use seu dinheiro pra comprar negócios. Eles geram renda automaticamente, mesmo quando você não está clicando!',
+    dica: '💡 Ao atingir 20 unidades de um negócio, ele vira Franquia e produz 30% a mais.',
+    icon: '🏪'
+  },
+  {
+    titulo: '⬆️ Upgrades e Gerentes',
+    texto: 'Upgrades melhoram a produção de cada negócio. Gerentes dobram a produção e deixam o negócio rodar sozinho!',
+    dica: '💡 Contrate gerentes assim que puder — liberam você pra focar em expandir.',
+    icon: '👔'
+  },
+  {
+    titulo: '💰 Finanças e Investimentos',
+    texto: 'Invista na bolsa, compre imóveis pra aluguel, exporte produtos com câmbio real e especule com memecoins!',
+    dica: '⚠️ Cuidado com empréstimos — reduzem sua renda em 25% e bloqueiam imóveis até quitar.',
+    icon: '📈'
+  },
+  {
+    titulo: '🕵️ Mercado Negro',
+    texto: 'Negócios ilegais dão vantagens rápidas mas têm RISCO. Se a fiscalização pegar, um negócio fecha por minutos!',
+    dica: '⚠️ Não use se tiver dívida no banco. O risco é real!',
+    icon: '🕵️'
+  },
+  {
+    titulo: '👑 Perfil e Social',
+    texto: 'Personalize seu avatar, moldura e banner. Suba no ranking, sabotem rivais e entre em guilds!',
+    dica: '💡 Troféus, títulos e temas da loja mostram seu status pra todos.',
+    icon: '🏆'
+  },
+];
+
+let tutorialPassoAtual = 0;
+
+function abrirTutorial() {
+  tutorialPassoAtual = 0;
+  renderPassoTutorial();
+  abrirModal('modal-tutorial');
+}
+
+function renderPassoTutorial() {
+  const passo = TUTORIAL_PASSOS[tutorialPassoAtual];
+  const total = TUTORIAL_PASSOS.length;
+  const isUltimo = tutorialPassoAtual === total - 1;
+
+  document.getElementById('tutorial-passo').innerHTML = `
+    <div style="text-align:center;margin-bottom:1rem">
+      <div style="font-size:48px;margin-bottom:8px">${passo.icon}</div>
+      <div style="font-size:16px;font-weight:500;color:var(--text);margin-bottom:8px">${passo.titulo}</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px">${passo.texto}</div>
+      <div style="background:var(--bg3);border-radius:8px;padding:10px;font-size:12px;color:var(--text2);text-align:left">${passo.dica}</div>
+    </div>
+  `;
+
+  const dots = document.getElementById('tutorial-dots');
+  dots.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.style = `width:8px;height:8px;border-radius:50%;background:${i===tutorialPassoAtual?'var(--green)':'var(--border2)'}`;
+    dots.appendChild(dot);
+  }
+
+  const btnProx = document.getElementById('btn-tut-prox');
+  if (btnProx) btnProx.textContent = isUltimo ? '✅ Jogar!' : 'Próximo →';
+
+  const btnPular = document.getElementById('btn-tut-pular');
+  if (btnPular) btnPular.style.display = isUltimo ? 'none' : 'block';
+}
+
+function proximoPassoTutorial() {
+  if (tutorialPassoAtual < TUTORIAL_PASSOS.length - 1) {
+    tutorialPassoAtual++;
+    renderPassoTutorial();
+    SOM.notif();
+  } else {
+    fecharModal('modal-tutorial');
+    mostrarNotif('Tutorial concluído! Bom jogo! 🎮');
+  }
+}
+
+// Mostrar tutorial no primeiro login
+function verificarPrimeiroLogin() {
+  const chave = 'mei_tutorial_visto';
+  if (!localStorage.getItem(chave)) {
+    localStorage.setItem(chave, '1');
+    setTimeout(() => abrirTutorial(), 1500);
   }
 }
 
