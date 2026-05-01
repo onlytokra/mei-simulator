@@ -2520,7 +2520,14 @@ function loop(now){
   tickExportacao(dt);
   tickMemecoins(dt);
 
-  if(Math.floor(G.tick)%3===0&&Math.floor(G.tick)!==Math.floor(G.tick-dt)){renderDinheiro();renderNegocios();checarConquistas();atualizarMissoes();verificarMarcosImperio();verificarFalido();}
+  // Atualizar dinheiro a cada frame
+  const dinheiroEl=document.getElementById('dinheiro');
+  const rpsEl=document.getElementById('rps');
+  if(dinheiroEl) dinheiroEl.textContent=fmt(G.dinheiro);
+  if(rpsEl) rpsEl.textContent=fmt(calcRPS())+' / seg';
+
+  // Resto atualiza a cada 2 segundos
+  if(Math.floor(G.tick*0.5)!==Math.floor((G.tick-dt)*0.5)){renderDinheiro();renderNegocios();checarConquistas();atualizarMissoes();verificarMarcosImperio();verificarFalido();}
   if(Math.floor(G.tick)%60===0&&Math.floor(G.tick)!==Math.floor(G.tick-dt)){if(G.negocios.some(n=>n.qtd>0))dispararEvento();}
 
   // Guild contribuição passiva
