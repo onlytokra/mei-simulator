@@ -193,6 +193,18 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   .mais-menu-btn:hover { border-color:var(--border2); color:var(--text); }
   .mais-menu-btn.red { color:var(--red); border-color:var(--red); }
   .mais-menu-btn.red:hover { background:var(--red); color:#fff; }
+
+  /* SUBABAS DENTRO DO CONTEÚDO */
+  .subabas-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1rem;overflow-x:auto;}
+  .subaba{font-size:12px;color:var(--text2);padding:7px 12px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;transition:color 0.15s,border-color 0.15s;}
+  .subaba:hover{color:var(--text);}
+  .subaba.ativo{color:var(--green);border-bottom-color:var(--green);font-weight:500;}
+.grupo-content{display:none;}.grupo-content.ativo{display:block;}
+  /* SUBABAS DENTRO DO CONTEÚDO */
+  .subabas-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1rem;overflow-x:auto;}
+  .subaba{font-size:12px;color:var(--text2);padding:7px 12px;cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap;transition:color 0.15s,border-color 0.15s;}
+  .subaba:hover{color:var(--text);}
+  .subaba.ativo{color:var(--green);border-bottom-color:var(--green);font-weight:500;}
 </style>
 </head>
 <body>
@@ -534,38 +546,16 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
     <button class="menu-grupo-btn" id="grp-extra" onclick="abrirGrupo('extra')">🎮 Extra ▾</button>
   </div>
 
-  <div class="submenu ativo" id="submenu-negocios">
-    <button class="submenu-btn ativo" onclick="trocarTab('negocios',this)">🏪 Negócios</button>
-    <button class="submenu-btn" onclick="trocarTab('upgrades',this)">⬆️ Upgrades</button>
-    <button class="submenu-btn" onclick="trocarTab('gerentes',this)">👔 Gerentes</button>
-    <button class="submenu-btn" onclick="trocarTab('funcionarios',this)">👷 Equipe</button>
-    <button class="submenu-btn" onclick="trocarTab('habilidades',this)">🌳 Talentos</button>
-  </div>
-  <div class="submenu" id="submenu-financas">
-    <button class="submenu-btn" onclick="trocarTab('bolsa',this)">📈 Bolsa</button>
-    <button class="submenu-btn" onclick="trocarTab('memecoins',this)">🐸 Memecoins</button>
-    <button class="submenu-btn" onclick="trocarTab('imoveis',this)">🏠 Imóveis</button>
-    <button class="submenu-btn" onclick="trocarTab('banco',this)">🏦 Banco</button>
-    <button class="submenu-btn" onclick="trocarTab('cassino',this)">🎰 Cassino</button>
-  </div>
-  <div class="submenu" id="submenu-mundo">
-    <button class="submenu-btn" onclick="trocarTab('mapa',this)">🗺️ Bairros</button>
-    <button class="submenu-btn" onclick="trocarTab('exportacao',this)">🌍 Exportação</button>
-    <button class="submenu-btn" onclick="trocarTab('mercado',this)">🕵️ Mercado Negro</button>
-  </div>
-  <div class="submenu" id="submenu-social-grp">
-    <button class="submenu-btn" onclick="trocarTab('social',this)">👑 Perfil</button>
-    <button class="submenu-btn" onclick="trocarTab('guilds',this)">🏰 Guild</button>
-    <button class="submenu-btn" onclick="trocarTab('chat',this)">💬 Chat</button>
-    <button class="submenu-btn" onclick="trocarTab('loja',this)">🛍️ Loja</button>
-  </div>
-  <div class="submenu" id="submenu-extra">
-    <button class="submenu-btn" onclick="trocarTab('missoes',this)">📋 Missões</button>
-    <button class="submenu-btn" onclick="trocarTab('historico',this)">📰 Histórico</button>
-    <button class="submenu-btn" onclick="trocarTab('stats',this)">📊 Stats</button>
-  </div>
-  <div style="margin-bottom:1rem"></div>
+  <div style="margin-bottom:0.5rem"></div>
 
+  <div id="grupo-container-negocios" style="display:block">
+  <div class="subabas-bar" id="subabas-negocios">
+    <button class="subaba ativo" onclick="trocarTab('negocios',this,'negocios')">🏪 Negócios</button>
+    <button class="subaba " onclick="trocarTab('upgrades',this,'negocios')">⬆️ Upgrades</button>
+    <button class="subaba " onclick="trocarTab('gerentes',this,'negocios')">👔 Gerentes</button>
+    <button class="subaba " onclick="trocarTab('funcionarios',this,'negocios')">👷 Equipe</button>
+    <button class="subaba " onclick="trocarTab('habilidades',this,'negocios')">🌳 Talentos</button>
+  </div>
   <div id="tab-negocios" class="tab-content ativo"><div id="lista-negocios"></div></div>
   <div id="tab-upgrades" class="tab-content"><div id="lista-upgrades"></div></div>
   <div id="tab-gerentes" class="tab-content"><p style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Gerentes dobram produção.</p><div id="lista-gerentes"></div></div>
@@ -2014,23 +2004,71 @@ const MAPA_GRUPOS={
   missoes:'extra',historico:'extra',stats:'extra',
 };
 
+const GRUPOS_ABAS = {
+  'negocios':  [['negocios','🏪 Negócios'],['upgrades','⬆️ Upgrades'],['gerentes','👔 Gerentes'],['funcionarios','👷 Equipe'],['habilidades','🌳 Talentos']],
+  'financas':  [['bolsa','📈 Bolsa'],['memecoins','🐸 Memecoins'],['imoveis','🏠 Imóveis'],['banco','🏦 Banco'],['cassino','🎰 Cassino']],
+  'mundo':     [['mapa','🗺️ Bairros'],['exportacao','🌍 Exportação'],['mercado','🕵️ Mercado Negro']],
+  'social-grp':[['social','👑 Perfil'],['guilds','🏰 Guild'],['chat','💬 Chat'],['loja','🛍️ Loja']],
+  'extra':     [['missoes','📋 Missões'],['historico','📰 Histórico'],['stats','📊 Stats']],
+};
+
 function abrirGrupo(grupo){
-  document.querySelectorAll('.submenu').forEach(s=>s.classList.remove('ativo'));
+  // Atualizar botões de grupo
   document.querySelectorAll('.menu-grupo-btn').forEach(b=>b.classList.remove('ativo'));
-  const sub=document.getElementById('submenu-'+grupo);
-  if(sub) sub.classList.add('ativo');
   const btn=document.getElementById('grp-'+grupo);
   if(btn) btn.classList.add('ativo');
+
+  // Esconder todas as subabas e tabs
+  document.querySelectorAll('.subabas-bar').forEach(s=>s.style.display='none');
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('ativo'));
+
+  // Mostrar subabas do grupo ativo
+  const subabas = document.getElementById('subabas-'+grupo);
+  if(subabas) subabas.style.display='flex';
+
+  // Abrir a primeira aba do grupo
+  const abas = GRUPOS_ABAS[grupo];
+  if(abas && abas[0]){
+    const primeiraAba = abas[0][0];
+    const tabEl = document.getElementById('tab-'+primeiraAba);
+    if(tabEl) tabEl.classList.add('ativo');
+    // Marcar primeira subaba como ativa
+    document.querySelectorAll('#subabas-'+grupo+' .subaba').forEach((b,i)=>{
+      b.classList.toggle('ativo', i===0);
+    });
+    // Renderizar conteúdo
+    renderizarAba(primeiraAba);
+  }
 }
 
-function trocarTab(nome,btn){
+function renderizarAba(nome){
+  renderizarAba(nome);
+}
+
+function trocarTab(nome,btn,grupoForce){
+  // Esconder todos os tabs
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('ativo'));
   const tabEl=document.getElementById('tab-'+nome);
   if(tabEl) tabEl.classList.add('ativo');
-  document.querySelectorAll('.submenu-btn').forEach(b=>b.classList.remove('ativo'));
-  if(btn) btn.classList.add('ativo');
-  const grupo=MAPA_GRUPOS[nome];
-  if(grupo) abrirGrupo(grupo);
+
+  // Atualizar subabas ativas
+  const grupo=grupoForce||MAPA_GRUPOS[nome];
+  if(grupo){
+    // Garantir grupo certo ativo
+    document.querySelectorAll('.menu-grupo-btn').forEach(b=>b.classList.remove('ativo'));
+    const grpBtn=document.getElementById('grp-'+grupo);
+    if(grpBtn) grpBtn.classList.add('ativo');
+    // Mostrar subabas corretas
+    document.querySelectorAll('.subabas-bar').forEach(s=>s.style.display='none');
+    const subabas=document.getElementById('subabas-'+grupo);
+    if(subabas) subabas.style.display='flex';
+    // Marcar subaba ativa
+    if(subabas){
+      subabas.querySelectorAll('.subaba').forEach(b=>{
+        b.classList.toggle('ativo', b.getAttribute('onclick')?.includes("'"+nome+"'"));
+      });
+    }
+  }
   if(nome==='upgrades')renderUpgrades();
   if(nome==='gerentes')renderGerentes();
   if(nome==='funcionarios')renderFuncionarios();
@@ -2072,6 +2110,10 @@ let lastTime=performance.now();
 
 function iniciarLoop(){
   renderDinheiro();renderNegocios();
+  // Inicializar menu mostrando grupo negocios
+  document.querySelectorAll('.subabas-bar').forEach(s=>s.style.display='none');
+  const sub = document.getElementById('subabas-negocios');
+  if(sub) sub.style.display='flex';
   requestAnimationFrame(loop);
 }
 
