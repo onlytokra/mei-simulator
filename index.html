@@ -597,7 +597,7 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   </div>
 
   <!-- PERFIL NO TOPO -->
-  <div class="perfil-topo" onclick="irParaTela('eu')">
+  <div class="perfil-topo" onclick="abrirMeuPerfil()">
     <div class="perfil-topo-avatar">
       <span id="avatar-topo">🧑‍💼</span>
     </div>
@@ -879,7 +879,7 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
       <div class="bn-label">Social</div>
       <div class="bn-dot"></div>
     </div>
-    <div class="bottom-nav-item" id="bn-eu" onclick="irParaTela('eu')">
+    <div class="bottom-nav-item" id="bn-eu" onclick="abrirMeuPerfil()">
       <div class="bn-icon">👤</div>
       <div class="bn-label">Eu</div>
       <div class="bn-dot"></div>
@@ -2609,14 +2609,24 @@ function loop(now){
   tickExportacao(dt);
   tickMemecoins(dt);
 
-  // Atualizar dinheiro a cada frame
-  const dinheiroEl=document.getElementById('dinheiro');
-  const rpsEl=document.getElementById('rps');
-  if(dinheiroEl) dinheiroEl.textContent=fmt(G.dinheiro);
-  if(rpsEl) rpsEl.textContent=fmt(calcRPS())+' / seg';
+  // Atualizar dinheiro a cada frame (direto, sem chamar renderDinheiro inteiro)
+  const _dEl=document.getElementById('dinheiro');
+  const _rEl=document.getElementById('rps');
+  if(_dEl) _dEl.textContent=fmt(G.dinheiro);
+  if(_rEl) _rEl.textContent=fmt(calcRPS())+' / seg';
 
-  // Resto atualiza a cada 2 segundos
-  if(Math.floor(G.tick*0.5)!==Math.floor((G.tick-dt)*0.5)){renderDinheiro();renderNegocios();checarConquistas();atualizarMissoes();verificarMarcosImperio();verificarFalido();}
+  // UI completa a cada 1 segundo
+  if(Math.floor(G.tick)!==Math.floor(G.tick-dt)){
+    renderDinheiro();
+    checarConquistas();
+    atualizarMissoes();
+    verificarMarcosImperio();
+    verificarFalido();
+  }
+  // Negócios a cada 2 segundos (mais pesado)
+  if(Math.floor(G.tick*0.5)!==Math.floor((G.tick-dt)*0.5)){
+    renderNegocios();
+  }
   if(Math.floor(G.tick)%60===0&&Math.floor(G.tick)!==Math.floor(G.tick-dt)){if(G.negocios.some(n=>n.qtd>0))dispararEvento();}
   if(Math.floor(G.tick)%300===0&&Math.floor(G.tick)!==Math.floor(G.tick-dt)&&G.tick>60){if(G.negocios.filter(n=>n.qtd>0).length>=3)dispararEventoEscolha();}
 
@@ -4757,9 +4767,8 @@ function trocarSecaoSocial(secao) {
         <div id="sabotagem-msg" style="font-size:11px;margin-top:6px;color:var(--text3)"></div>
       </div>`;
   } else if(secao==='monopolio'){
-    el.innerHTML = '<div id="social-content"></div>';
-    // Mostrar apenas seção de monopólio
-    renderSocial();
+    el.innerHTML = '';
+    renderMonopolio();
   }
 }
 
@@ -5407,6 +5416,49 @@ function jogarSlots(aposta) {
       renderDinheiro();
     }
   }, 80);
+}
+
+function renderMonopolio() {
+  const el = document.getElementById('eu-sub-content') || document.getElementById('social-sub-content');
+  if(!el) return;
+
+  const monopolioAtivo = Object.entries(G.monopolios||{}).find(([k,v]) => v > Date.now());
+
+  let html = '<div class="card"><div style="font-size:13px;font-weight:500;color:var(--gold);margin-bottom:4px">👑 Monopólio</div>';
+  html += '<div style="font-size:12px;color:var(--text2);margin-bottom:8px">Compre exclusividade de um setor. Multiplica produção por tempo limitado.</div>';
+
+  if(monopolioAtivo){
+    const m = MONOPOLIOS_DISPONIVEIS.find(x=>x.id===monopolioAtivo[0]);
+    html += '<div style="background:rgba(204,153,0,0.1);border:1px solid var(--gold);border-radius:8px;padding:0.6rem;font-size:13px;color:var(--gold);text-align:center">';
+    html += '👑 Monopólio ativo: '+(m?m.icon+' '+m.nome:'')+'<br>';
+    html += '<span style="font-size:11px;color:var(--text3)">Expira em '+Math.ceil((monopolioAtivo[1]-Date.now())/1000)+'s</span></div>';
+  } else {
+    MONOPOLIOS_DISPONIVEIS.forEach(m => {
+      const negocio = G.negocios.find(n=>n.id===m.id);
+      const disponivel = negocio && negocio.qtd >= 10;
+      const pode = G.dinheiro >= m.custo;
+      html += '<div style="display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">';
+      html += '<div style="font-size:22px">'+m.icon+'</div>';
+      html += '<div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--text)">'+m.nome+'</div>';
+      html += '<div style="font-size:11px;color:var(--text2)">'+m.desc+' · '+m.bonus+'x prod. · '+m.duracao/60+'min</div>';
+      if(!disponivel) html += '<div style="font-size:10px;color:var(--red)">Requer 10+ negócios</div>';
+      html += '</div>';
+      html += '<button class="btn-small" style="color:'+(pode&&disponivel?'var(--gold)':'var(--text3)')+';border-color:'+(pode&&disponivel?'var(--gold)':'var(--text3)')+'" '+(disponivel&&pode?'':'disabled')+' data-mono-id="'+m.id+'">'+fmt(m.custo)+'</button>';
+      html += '</div>';
+    });
+  }
+  html += '</div>';
+
+  const div = document.createElement('div');
+  div.innerHTML = html;
+
+  // Event listeners nos botões
+  div.querySelectorAll('[data-mono-id]').forEach(btn => {
+    btn.addEventListener('click', () => comprarMonopolio(btn.getAttribute('data-mono-id')));
+  });
+
+  el.innerHTML = '';
+  el.appendChild(div);
 }
 
 </script>
