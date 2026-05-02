@@ -581,10 +581,11 @@ input[type=text],input[type=email],input[type=password],input[type=number]{width
   <div id="yt-player-div" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px"></div>
   <div class="musica-bar" id="musica-bar">
     <span>🎵</span>
-    <span style="flex:1" id="musica-nome">Lo-fi Brasileiro — Chill Beats</span>
-    <button onclick="toggleMusica()" id="btn-musica">▶️</button>
-    <button onclick="mudarMusica(-1)">⏮</button>
-    <button onclick="mudarMusica(1)">⏭</button>
+    <span style="flex:1;font-size:11px" id="musica-nome">Lo-fi Chill Beats</span>
+    <input type="range" id="volume-slider" min="0" max="100" value="25"
+      style="width:60px;height:4px;accent-color:var(--green);cursor:pointer"
+      oninput="ajustarVolume(this.value)">
+    <button onclick="toggleMusica()" id="btn-musica" style="font-size:12px">▶️</button>
     <div class="sync-status" id="sync-status" style="margin-left:4px">⏳</div>
   </div>
 
@@ -874,7 +875,7 @@ let currentUser=null,semConta=false,ultimoSave=0;
 let chatListener=null;
 
 const SAVE_KEY='mei_sim_v4';
-const RPS_BASE=[0.03,0.15,1.2,6,24,105,600,3600,21000,150000,1200000,9000000,0.5,15,8,80,4];
+const RPS_BASE=[0.03,0.15,1.2,6,24,105,600,3600,21000,150000,1200000,9000000,0.08,0.4,3,15,80,80,4,200,0,80,500,350];
 const AVATARES_DATA = [
   // GRÁTIS — disponíveis pra todos
   { emoji:'🧑‍💼', nome:'Executivo',     tipo:'free',  req:0,    custo:0 },
@@ -1026,11 +1027,13 @@ const G={
     {id:'relogio',icon:'⌚',nome:'Loja de Relógio na Calçada',desc:'Original, juro que é original',base:2000,rps:3,qtd:0,prog:0,ciclo:18},
     {id:'salgado',icon:'🥟',nome:'Salgadinho na Escola',desc:'Coxinha por R$2, combo por R$3.50',base:8000,rps:15,qtd:0,prog:0,ciclo:22},
     {id:'racha_cuca',icon:'🎮',nome:'LAN House do Racha-Cuca',desc:'R$2 a hora, CS 1.6 incluso',base:40000,rps:80,qtd:0,prog:0,ciclo:35},
-    {id:'agua_praia',icon:'💧',nome:'Venda de Água na Praia',desc:'R$3 a garrafa, mano',base:50,rps:0.5,qtd:0,prog:0,ciclo:6,secreto:true},
-    {id:'shein',icon:'👗',nome:'Importação da Shein',desc:'Chega em 30 dias... ou nunca',base:2000,rps:15,qtd:0,prog:0,ciclo:20,secreto:true},
-    {id:'relogio',icon:'⌚',nome:'Relógio na Calçada',desc:'Rolex por R$50, fio',base:500,rps:8,qtd:0,prog:0,ciclo:12,secreto:true},
-    {id:'onlymei',icon:'💼',nome:'OnlyMEI',desc:'Conteúdo exclusivo pra assinantes',base:10000,rps:80,qtd:0,prog:0,ciclo:30,secreto:true},
-    {id:'banheiro',icon:'🚽',nome:'Banheiro Pago',desc:'R$2 o uso, R$1 pra quem vai rápido',base:300,rps:4,qtd:0,prog:0,ciclo:10,secreto:true},
+    {id:'onlymei',icon:'💼',nome:'OnlyMEI',desc:'Conteúdo exclusivo pra assinantes',base:10000,rps:80,qtd:0,prog:0,ciclo:30},
+    {id:'banheiro',icon:'🚽',nome:'Banheiro Pago',desc:'R$2 o uso, R$1 pra quem vai rápido',base:300,rps:4,qtd:0,prog:0,ciclo:10},
+    {id:'crossfit',icon:'🏋️',nome:'Academia de CrossFit',desc:'Tiozão de camiseta cavada incluso',base:40000,rps:200,qtd:0,prog:0,ciclo:40},
+    {id:'podcast',icon:'🎙️',nome:'Podcast do Império',desc:'Renda baseada na sua reputação',base:60000,rps:0,qtd:0,prog:0,ciclo:45},
+    {id:'produtos_mir',icon:'✨',nome:'Loja de Produtos Milagrosos',desc:'Emagrece, cura e rejuvenesce!',base:15000,rps:80,qtd:0,prog:0,ciclo:25},
+    {id:'nft',icon:'🖼️',nome:'Revenda de NFT',desc:'JPEG de R$50k. Completamente sério.',base:200000,rps:500,qtd:0,prog:0,ciclo:55},
+    {id:'consultoria',icon:'📊',nome:'Consultoria Financeira',desc:'Cobro R$997 pra ensinar a ficar rico',base:80000,rps:350,qtd:0,prog:0,ciclo:45},
   ],
   upgrades:[
     {id:'u1',negocio:'cachorro',nome:'Carrinho Elétrico',desc:'+100%',custo:500,mult:2},
@@ -1880,6 +1883,23 @@ function trocarRanking(aba){
 
 async function abrirRanking(){
   abrirModal('modal-ranking');
+  // Adicionar botão cassino no ranking
+  setTimeout(()=>{
+    const info = document.getElementById('rank-reset-info');
+    if(info && !info.querySelector('.rank-extra-btns')){
+      const div = document.createElement('div');
+      div.className = 'rank-extra-btns';
+      div.style = 'display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:6px';
+      div.setAttribute('data-ranking-extra', '1');
+      const btnCassino = document.createElement('button');
+      btnCassino.className = 'btn-small';
+      btnCassino.style = 'color:var(--gold);border-color:var(--gold)';
+      btnCassino.textContent = '🎰 Cassino';
+      btnCassino.onclick = () => carregarRanking('cassino');
+      div.appendChild(btnCassino);
+      info.appendChild(div);
+    }
+  }, 100);
   trocarRanking('alltime');
 }
 
@@ -2726,7 +2746,9 @@ function renderExportacao(){
   const el = document.getElementById('exportacao-content');
   if(!el) return;
 
-  const totalExport = Object.values(exportacaoAtiva).reduce((s,v)=>s+v,0);
+  const totalExport = Object.keys(exportacaoAtiva)
+    .filter(k=>!k.includes('_renda'))
+    .reduce((s,k)=>s+(exportacaoAtiva[k+'_renda']||0),0);
 
   let html = `
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem">
@@ -2741,40 +2763,61 @@ function renderExportacao(){
         </div>
       </div>
     </div>
-    <div style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Selecione um produto e um destino para exportar:</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:0.75rem">Selecione um produto e destino para exportar:</div>
   `;
+
+  el.innerHTML = html;
 
   PRODUTOS_EXPORT.forEach(p => {
     const negocio = G.negocios.find(n=>n.id===p.negocioReq);
     const disponivel = negocio && negocio.qtd >= 5;
     const ativo = exportacaoAtiva[p.id];
 
-    html += `
-      <div class="card" style="margin-bottom:0.5rem;${!disponivel?'opacity:0.5':''}">
-        <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
-          <div style="font-size:24px">${p.icon}</div>
-          <div style="flex:1">
-            <div style="font-size:13px;font-weight:500;color:var(--text)">${p.nome}</div>
-            <div style="font-size:11px;color:var(--text2)">${p.desc}</div>
-            ${!disponivel?`<div style="font-size:11px;color:var(--red)">🔒 Requer 5+ ${negocio?negocio.nome:'negócios'}</div>`:''}
-            ${ativo?`<div style="font-size:11px;color:var(--green)">✅ Exportando para ${DESTINOS_EXPORT.find(d=>d.id===ativo)?.nome} — ${fmt(exportacaoAtiva[p.id+'_renda']||0)}/min</div>`:''}
-          </div>
-        </div>
-        ${disponivel?`
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          ${DESTINOS_EXPORT.map(d=>`
-            <button class="btn-small" style="flex:1;color:${ativo===d.id?'var(--green)':'var(--text2)'};border-color:${ativo===d.id?'var(--green)':'var(--border)'}" onclick="exportarPara('${p.id}','${d.id}')">
-              ${d.icon} ${d.nome}<br><span style="font-size:10px">${fmt(p.preco*d.fator*d.demanda*cambioUSD)}/min</span>
-            </button>
-          `).join('')}
-          ${ativo?`<button class="btn-small" style="color:var(--red);border-color:var(--red)" onclick="pararExportacao('${p.id}')">⛔ Parar</button>`:''}
-        </div>
-        `:''}
-      </div>
-    `;
-  });
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style = 'margin-bottom:0.5rem;'+(disponivel?'':'opacity:0.5');
 
-  el.innerHTML = html;
+    let headerHtml = '<div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">';
+    headerHtml += '<div style="font-size:24px">'+p.icon+'</div>';
+    headerHtml += '<div style="flex:1">';
+    headerHtml += '<div style="font-size:13px;font-weight:500;color:var(--text)">'+p.nome+'</div>';
+    headerHtml += '<div style="font-size:11px;color:var(--text2)">'+p.desc+'</div>';
+    if(!disponivel) headerHtml += '<div style="font-size:11px;color:var(--red)">🔒 Requer 5+ '+(negocio?negocio.nome:'negócios')+'</div>';
+    if(ativo){
+      const dest = DESTINOS_EXPORT.find(d=>d.id===ativo);
+      headerHtml += '<div style="font-size:11px;color:var(--green)">✅ Exportando para '+(dest?dest.nome:ativo)+' — '+fmt(exportacaoAtiva[p.id+"_renda"]||0)+'/min</div>';
+    }
+    headerHtml += '</div></div>';
+    card.innerHTML = headerHtml;
+
+    if(disponivel){
+      const btnsDiv = document.createElement('div');
+      btnsDiv.style = 'display:flex;gap:4px;flex-wrap:wrap';
+
+      DESTINOS_EXPORT.forEach(d => {
+        const isAtivo = ativo === d.id;
+        const btn = document.createElement('button');
+        btn.className = 'btn-small';
+        btn.style = 'flex:1;color:'+(isAtivo?'var(--green)':'var(--text2)')+';border-color:'+(isAtivo?'var(--green)':'var(--border)');
+        btn.innerHTML = d.icon+' '+d.nome+'<br><span style="font-size:10px">'+fmt(p.preco*d.fator*d.demanda*cambioUSD)+'/min</span>';
+        btn.onclick = () => exportarPara(p.id, d.id);
+        btnsDiv.appendChild(btn);
+      });
+
+      if(ativo){
+        const btnParar = document.createElement('button');
+        btnParar.className = 'btn-small';
+        btnParar.style = 'color:var(--red);border-color:var(--red)';
+        btnParar.textContent = '⛔ Parar';
+        btnParar.onclick = () => pararExportacao(p.id);
+        btnsDiv.appendChild(btnParar);
+      }
+
+      card.appendChild(btnsDiv);
+    }
+
+    el.appendChild(card);
+  });
 }
 
 function exportarPara(produtoId, destinoId){
@@ -4162,9 +4205,7 @@ function abrirMeuPerfil() {
 // ===== MÚSICA DE FUNDO =====
 // Músicas via YouTube embed (sem CORS, funciona em qualquer browser)
 const MUSICAS = [
-  {nome:'Lo-fi Chill Beats', ytId:'jfKfPfyJRdk'},
-  {nome:'Bossa Nova Instrumental', ytId:'5yx6BWlEVcY'},
-  {nome:'Brasil Jazz Lounge', ytId:'Dx5qFachd3A'},
+  {nome:'Lo-fi Chill Beats 🎵', ytId:'jfKfPfyJRdk'},
 ];
 
 let musicaIdx = 0;
@@ -4193,6 +4234,12 @@ function onYouTubeIframeAPIReady() {
       onStateChange: (e) => { if(e.data===0) mudarMusica(1); }
     }
   });
+}
+
+function ajustarVolume(val) {
+  const v = val / 100;
+  if(musicaAudio) musicaAudio.volume = v;
+  if(ytPlayer && ytReady) ytPlayer.setVolume(val);
 }
 
 function toggleMusica() {
@@ -4224,6 +4271,11 @@ function mudarMusica(dir) {
     ytPlayer.loadVideoById(MUSICAS[musicaIdx].ytId);
     if(!musicaTocando) ytPlayer.pauseVideo();
   }
+}
+
+// Volume inicial baixo ao criar player
+function onYouTubeIframeAPIReadyVolume() {
+  if(ytPlayer && ytReady) ytPlayer.setVolume(25);
 }
 
 // ===== TOOLTIPS DE AJUDA =====
@@ -5201,6 +5253,70 @@ async function salvarStatsCassino() {
   } catch(e){}
 }
 
+
+function jogarSlots(aposta) {
+  if(G.dinheiro < aposta){mostrarNotif('Dinheiro insuficiente!');return;}
+  if(cassinoRodando) return;
+  cassinoRodando = true;
+  G.dinheiro -= aposta;
+  G.cassinoEstatisticas.jogadas++;
+  G.cassinoEstatisticas.perdas += aposta;
+  registrarExtrato('Caça-níquel (aposta)', -aposta, '🎰');
+
+  const slots = document.getElementById('slots-display');
+  const resultado = document.getElementById('slots-resultado');
+  let giros = 0;
+  const maxGiros = 15;
+
+  const intervalo = setInterval(() => {
+    const s1 = capaSlots[Math.floor(Math.random()*capaSlots.length)];
+    const s2 = capaSlots[Math.floor(Math.random()*capaSlots.length)];
+    const s3 = capaSlots[Math.floor(Math.random()*capaSlots.length)];
+    if(slots) slots.innerHTML = [s1,s2,s3].map(s =>
+      `<div style="font-size:40px;background:var(--bg3);border-radius:8px;padding:8px 16px">${s}</div>`
+    ).join('');
+    giros++;
+    if(giros >= maxGiros) {
+      clearInterval(intervalo);
+      cassinoRodando = false;
+      const r1 = capaSlots[Math.floor(Math.random()*capaSlots.length)];
+      const r2 = capaSlots[Math.floor(Math.random()*capaSlots.length)];
+      const r3 = capaSlots[Math.floor(Math.random()*capaSlots.length)];
+      if(slots) slots.innerHTML = [r1,r2,r3].map(s =>
+        `<div style="font-size:40px;background:var(--bg3);border-radius:8px;padding:8px 16px">${s}</div>`
+      ).join('');
+
+      let mult = 0;
+      if(r1===r2 && r2===r3){
+        if(r1==='💎') mult=50;
+        else if(r1==='7️⃣') mult=20;
+        else if(r1==='💰') mult=10;
+        else mult=5;
+      } else if(r1===r2||r2===r3||r1===r3){
+        mult=1.5;
+      }
+
+      if(mult>0){
+        const ganho=aposta*mult;
+        G.dinheiro+=ganho;G.totalGanho+=ganho;
+        G.cassinoEstatisticas.ganhos+=ganho;
+        G.cassinoEstatisticas.perdas-=aposta;
+        registrarExtrato('Caça-níquel '+(r1===r2&&r2===r3?'JACKPOT!':'Par!'), ganho, '🎰');
+        if(resultado){resultado.textContent=`🎉 ${r1===r2&&r2===r3?'JACKPOT!':'Par!'} +${fmt(ganho)} (${mult}x)`;resultado.style.color='var(--green)';}
+        SOM.conquista();spawnParticulasDinheiro(window.innerWidth/2,300,10);flashBrilho('#cc9');
+        cassinoPerdas+=aposta;
+        if(cassinoPerdas>=50000&&!G.conquistasSecretasDesbloqueadas.includes('cs9')){
+          G.conquistasSecretasDesbloqueadas.push('cs9');checarConquistasSecretas();
+        }
+      } else {
+        if(resultado){resultado.textContent=`😢 Perdeu ${fmt(aposta)}. Tente novamente!`;resultado.style.color='var(--red)';}
+        registrarExtrato('Caça-níquel (perdeu)', 0, '🎰');
+        SOM.eventoRuim();
+      }
+      renderDinheiro();
+    }
+  }, 80);
+}
 
 </script>
 </body>
