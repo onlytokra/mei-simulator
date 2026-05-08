@@ -410,7 +410,10 @@ function renderBiz(){
     <div><h2>${b.name}</h2><div class="sub">Dia ${bs.day} · Caixa: ${fmt(bs.cash)}</div></div>
     <button class="btn-advance" onclick="advanceDay()">Avançar dia ▶</button>
   </div>
-  <div id="save-indicator" class="save-indicator"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <div id="save-indicator" class="save-indicator"></div>
+    <button onclick="sacarLucro()" style="font-size:12px;padding:5px 12px;background:#1a2a1a;border-color:#2d4a2d;color:#4ade80">💸 Sacar lucro pro bolso</button>
+  </div>
   <div class="tabs">${tabs.map(t=>`<button class="tab-btn${currentTab===t.id?" active":""}" onclick="switchTab('${t.id}')">${t.label}</button>`).join("")}</div>
   <div class="panel">${renderTab(bs,b)}</div>`;
   document.getElementById("screen-biz").innerHTML=html;
@@ -553,6 +556,19 @@ window.restock=function(){
   notify("📦 Estoque reposto +30%!");
   scheduleSave();
   renderBiz();
+};
+
+window.sacarLucro=function(){
+  const bs=state.biz[currentBiz];
+  const reserva=5000;
+  const disponivel=Math.floor(bs.cash-reserva);
+  if(disponivel<=0){notify("Caixa precisa ter mais de R$ 5.000 pra sacar.","#f87171","#2a1515","#4a1f1f");return;}
+  bs.cash-=disponivel;
+  state.money+=disponivel;
+  notify(`💸 R$ ${disponivel.toLocaleString("pt-BR")} sacados pro seu bolso!`);
+  scheduleSave();
+  renderBiz();
+  // atualiza saldo no header se voltar pro mapa
 };
 
 window.setSupplier=function(sid){
