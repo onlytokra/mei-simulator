@@ -15,11 +15,26 @@ select:focus,input:focus{border-color:#555}
 #app{max-width:720px;margin:0 auto;padding:20px 16px}
 .screen{display:none}.screen.active{display:block}
 
-/* MAP */
+/* LOGIN */
+#screen-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center}
+.login-icon{font-size:56px;margin-bottom:16px}
+.login-title{font-size:24px;font-weight:600;color:#fff;margin-bottom:8px}
+.login-sub{font-size:14px;color:#666;margin-bottom:32px;line-height:1.6}
+.btn-google{display:flex;align-items:center;gap:10px;padding:12px 24px;font-size:15px;background:#fff;color:#1a1a1a;border:none;border-radius:10px;font-weight:500}
+.btn-google:hover{background:#f0f0f0}
+.btn-google svg{width:20px;height:20px}
+.login-loading{font-size:13px;color:#555;margin-top:16px}
+
+/* TOPBAR */
 .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
 .top-bar h1{font-size:20px;font-weight:600;color:#fff}
-.balance{font-size:14px;color:#aaa}
-.balance span{color:#4ade80;font-weight:600}
+.top-bar-right{display:flex;align-items:center;gap:10px}
+.balance{font-size:14px;color:#aaa}.balance span{color:#4ade80;font-weight:600}
+.user-info{display:flex;align-items:center;gap:8px}
+.user-avatar{width:28px;height:28px;border-radius:50%;border:1px solid #333}
+.user-name{font-size:13px;color:#888}
+.btn-logout{font-size:12px;padding:4px 10px;color:#888;border-color:#2a2a2a}
+
 .section-label{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
 .biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;margin-bottom:28px}
 .biz-card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:14px;transition:border-color .15s}
@@ -33,38 +48,30 @@ select:focus,input:focus{border-color:#555}
 .btn-buy:hover{background:#244535}
 .btn-buy:disabled{opacity:.4;cursor:not-allowed}
 
-/* BUSINESS SCREEN */
 .biz-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .biz-header .icon{font-size:26px}
 .biz-header h2{font-size:17px;font-weight:600;color:#fff}
 .biz-header .sub{font-size:12px;color:#777;margin-top:2px}
-.biz-header .btn-back{margin-right:4px;padding:6px 12px;font-size:13px}
+.btn-back{margin-right:4px;padding:6px 12px;font-size:13px}
 .btn-advance{margin-left:auto;padding:8px 18px;background:#1e3a2f;border-color:#2d5c45;color:#4ade80;font-size:13px}
 .btn-advance:hover{background:#244535}
 
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
 .tab-btn{padding:6px 13px;font-size:13px;border-radius:8px;border:1px solid transparent;color:#888}
 .tab-btn.active{background:#1a2a3a;border-color:#2a4a6a;color:#60a5fa}
-
 .panel{background:#141414;border:1px solid #222;border-radius:12px;padding:16px}
 
-/* METRICS */
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
 .metric{background:#1a1a1a;border-radius:8px;padding:10px 12px}
 .metric .lbl{font-size:11px;color:#666;margin-bottom:4px}
 .metric .val{font-size:15px;font-weight:500;color:#fff}
-
-/* CHART */
 .chart-wrap{margin-bottom:18px}
 .chart-label{font-size:12px;color:#666;margin-bottom:6px}
 .bars{display:flex;align-items:flex-end;gap:2px;height:56px}
-.bar{flex:1;border-radius:2px 2px 0 0;background:#1e3a2f;min-height:3px;transition:height .3s}
-
-/* EVENTS */
+.bar{flex:1;border-radius:2px 2px 0 0;background:#1e3a2f;min-height:3px}
 .events .ev{font-size:12px;color:#888;padding:6px 0;border-bottom:1px solid #1f1f1f;display:flex;gap:8px}
 .events .ev .day{color:#555;min-width:44px}
 
-/* EMPLOYEES */
 .emp-hire{display:flex;gap:8px;margin-bottom:16px}
 .emp-hire select{flex:1}
 .emp-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1f1f1f}
@@ -75,21 +82,18 @@ select:focus,input:focus{border-color:#555}
 .payroll{font-size:13px;color:#888;margin-bottom:12px}
 .payroll span{color:#fff;font-weight:500}
 
-/* PRODUCTS */
 .prod-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #1f1f1f}
 .prod-row .info{flex:1}
 .prod-row .pname{font-size:13px;font-weight:500;color:#fff}
 .prod-row .pmeta{font-size:11px;color:#666;margin-top:2px}
 .prod-row input{width:82px;text-align:right}
 
-/* STOCK */
 .stock-bar-wrap{background:#222;border-radius:4px;height:10px;overflow:hidden;margin-bottom:8px}
 .stock-bar{height:100%;border-radius:4px;transition:width .4s}
 .stock-status{font-size:13px;font-weight:500;margin-bottom:14px}
 .btn-restock{width:100%;padding:10px;font-size:13px;margin-bottom:18px;background:#1e2a3a;border-color:#2a4060;color:#60a5fa}
 .btn-restock:hover{background:#243040}
 
-/* SUPPLIERS */
 .sup-card{border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s,background .15s}
 .sup-card:hover{border-color:#444}
 .sup-card.active{border-color:#2a4a6a;background:#0f1e2e}
@@ -98,20 +102,51 @@ select:focus,input:focus{border-color:#555}
 .sup-badge{font-size:11px;padding:2px 8px;border-radius:6px;background:#1a2a3a;color:#60a5fa;border:1px solid #2a4a6a}
 .sup-meta{display:flex;gap:14px;font-size:12px;color:#666}
 
-/* NOTIFICATION */
-#notif{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#1e3a2f;border:1px solid #2d5c45;color:#4ade80;padding:10px 18px;border-radius:10px;font-size:13px;display:none;z-index:99;white-space:nowrap}
+.save-indicator{font-size:11px;color:#555;text-align:right;margin-bottom:8px;height:16px}
+.save-indicator.saving{color:#fbbf24}
+.save-indicator.saved{color:#4ade80}
 
+#notif{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#1e3a2f;border:1px solid #2d5c45;color:#4ade80;padding:10px 18px;border-radius:10px;font-size:13px;display:none;z-index:99;white-space:nowrap}
 .empty{font-size:13px;color:#555;padding:8px 0}
 </style>
 </head>
 <body>
 <div id="notif"></div>
 <div id="app">
-  <div id="screen-map" class="screen active"></div>
+  <div id="screen-login" class="screen active">
+    <div class="login-icon">🏪</div>
+    <div class="login-title">MEI Simulator</div>
+    <div class="login-sub">Gerencie seus negócios, contrate funcionários,<br>negocie fornecedores e cresça do zero.</div>
+    <button class="btn-google" onclick="loginGoogle()">
+      <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+      Entrar com Google
+    </button>
+    <div class="login-loading" id="login-loading"></div>
+  </div>
+  <div id="screen-map" class="screen"></div>
   <div id="screen-biz" class="screen"></div>
 </div>
 
-<script>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+import{getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+import{getFirestore,doc,getDoc,setDoc}from"https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+const firebaseConfig={
+  apiKey:"AIzaSyDdw5ETieWuq6Iki3Ri0YsZKW56NJCR2AI",
+  authDomain:"mei-simulator-953dd.firebaseapp.com",
+  projectId:"mei-simulator-953dd",
+  storageBucket:"mei-simulator-953dd.firebasestorage.app",
+  messagingSenderId:"500542612361",
+  appId:"1:500542612361:web:6aa52649dc3a1fa27f7758"
+};
+
+const fireApp=initializeApp(firebaseConfig);
+const auth=getAuth(fireApp);
+const db=getFirestore(fireApp);
+let currentUser=null;
+let saveTimeout=null;
+
 const BUSINESSES=[
   {id:"mercadinho",name:"Mercadinho",icon:"🛒",price:15000,desc:"Varejo de bairro com grande fluxo"},
   {id:"barbearia",name:"Barbearia",icon:"✂️",price:8000,desc:"Serviço masculino de alta rotatividade"},
@@ -119,7 +154,6 @@ const BUSINESSES=[
   {id:"borracharia",name:"Borracharia",icon:"🔧",price:10000,desc:"Pneus, alinhamento e serviços automotivos"},
   {id:"salao",name:"Salão de Beleza",icon:"💇",price:9000,desc:"Cabelo, unhas e estética feminina"},
 ];
-
 const SUPPLIERS={
   mercadinho:[
     {id:"s1",name:"Atacadão",quality:3,pm:0.70,days:3,min:500},
@@ -148,7 +182,6 @@ const SUPPLIERS={
     {id:"s3",name:"Atacado Beleza",quality:3,pm:0.65,days:5,min:200},
   ],
 };
-
 const ROLES={
   mercadinho:["Caixa","Repositor","Segurança","Gerente"],
   barbearia:["Barbeiro","Recepcionista","Gerente"],
@@ -156,9 +189,7 @@ const ROLES={
   borracharia:["Borracheiro","Auxiliar","Gerente"],
   salao:["Cabeleireiro","Manicure","Recepcionista","Gerente"],
 };
-
 const SALARIES={Caixa:1412,Repositor:1412,Segurança:1600,Gerente:3500,Barbeiro:2500,Recepcionista:1412,Cozinheiro:2000,Atendente:1412,Borracheiro:2200,Auxiliar:1412,Cabeleireiro:2500,Manicure:1800};
-
 const PRODUCTS={
   mercadinho:[
     {id:"p1",name:"Bebidas",base:4.5,cr:0.55},
@@ -193,7 +224,6 @@ const PRODUCTS={
     {id:"p4",name:"Manicure/Pedicure",base:45,cr:0.15},
   ],
 };
-
 const EVENTS=[
   {msg:"Fiscalização sanitária! Multa de R$ 500.",fx:b=>{b.cash-=500}},
   {msg:"Semana boa! Vendas acima do esperado.",fx:b=>{b.cash+=800}},
@@ -212,16 +242,75 @@ let state={money:25000,owned:{},biz:{}};
 let currentBiz=null;
 let currentTab="dashboard";
 
-function initBiz(id){
-  state.biz[id]={
+function initBizData(id){
+  return{
     id,cash:5000,reputation:60,stock:80,day:1,
-    revenue:0,expenses:0,
-    employees:[],
+    revenue:0,expenses:0,employees:[],
     supplier:SUPPLIERS[id][0].id,
     prices:Object.fromEntries(PRODUCTS[id].map(p=>[p.id,p.base])),
     history:[],events:[],
   };
 }
+
+function setSaveIndicator(status){
+  const el=document.getElementById("save-indicator");
+  if(!el)return;
+  if(status==="saving"){el.className="save-indicator saving";el.textContent="Salvando..."}
+  else if(status==="saved"){el.className="save-indicator saved";el.textContent="✓ Salvo"}
+  else{el.className="save-indicator";el.textContent=""}
+}
+
+async function saveState(){
+  if(!currentUser)return;
+  setSaveIndicator("saving");
+  try{
+    await setDoc(doc(db,"users",currentUser.uid),{state:JSON.stringify(state),updatedAt:Date.now()});
+    setSaveIndicator("saved");
+    setTimeout(()=>setSaveIndicator(""),2000);
+  }catch(e){console.error("Erro ao salvar:",e)}
+}
+
+function scheduleSave(){
+  clearTimeout(saveTimeout);
+  saveTimeout=setTimeout(saveState,1500);
+}
+
+async function loadState(){
+  if(!currentUser)return;
+  try{
+    const snap=await getDoc(doc(db,"users",currentUser.uid));
+    if(snap.exists()&&snap.data().state){
+      state=JSON.parse(snap.data().state);
+    }
+  }catch(e){console.error("Erro ao carregar:",e)}
+}
+
+window.loginGoogle=async function(){
+  document.getElementById("login-loading").textContent="Entrando...";
+  try{
+    const provider=new GoogleAuthProvider();
+    await signInWithPopup(auth,provider);
+  }catch(e){
+    document.getElementById("login-loading").textContent="Erro ao entrar. Tente novamente.";
+  }
+};
+
+window.logoutUser=async function(){
+  await signOut(auth);
+};
+
+onAuthStateChanged(auth,async user=>{
+  if(user){
+    currentUser=user;
+    document.getElementById("login-loading").textContent="Carregando seu progresso...";
+    await loadState();
+    showScreen("map");
+    renderMap();
+  }else{
+    currentUser=null;
+    showScreen("login");
+  }
+});
 
 function notify(msg,color="#4ade80",bg="#1e3a2f",border="#2d5c45"){
   const el=document.getElementById("notif");
@@ -240,7 +329,20 @@ function showScreen(id){
 function renderMap(){
   const el=document.getElementById("screen-map");
   const owned=Object.keys(state.owned);
-  let html=`<div class="top-bar"><h1>MEI Simulator</h1><div class="balance">Saldo: <span>${fmt(state.money)}</span></div></div>`;
+  const name=currentUser?.displayName?.split(" ")[0]||"";
+  const avatar=currentUser?.photoURL||"";
+
+  let html=`<div class="top-bar">
+    <h1>MEI Simulator</h1>
+    <div class="top-bar-right">
+      <div class="balance">Saldo: <span>${fmt(state.money)}</span></div>
+      <div class="user-info">
+        ${avatar?`<img class="user-avatar" src="${avatar}" referrerpolicy="no-referrer">`:""}
+        <span class="user-name">${name}</span>
+        <button class="btn-logout" onclick="logoutUser()">Sair</button>
+      </div>
+    </div>
+  </div>`;
 
   if(owned.length){
     html+=`<div class="section-label">Meus negócios</div><div class="biz-grid">`;
@@ -271,32 +373,28 @@ function renderMap(){
     });
     html+=`</div>`;
   }
-
   el.innerHTML=html;
 }
 
-function buyBiz(id){
+window.buyBiz=function(id){
   const b=BUSINESSES.find(x=>x.id===id);
   if(state.money<b.price){notify("Dinheiro insuficiente!","#f87171","#2a1515","#4a1f1f");return;}
   state.money-=b.price;
   state.owned[id]=true;
-  initBiz(id);
-  notify(`${b.icon} ${b.name} comprado! Bora gerenciar.`);
+  state.biz[id]=initBizData(id);
+  notify(`${b.icon} ${b.name} comprado!`);
+  scheduleSave();
   renderMap();
-}
+};
 
-function openBiz(id){
-  currentBiz=id;
-  currentTab="dashboard";
-  showScreen("biz");
-  renderBiz();
-}
+window.openBiz=function(id){
+  currentBiz=id;currentTab="dashboard";
+  showScreen("biz");renderBiz();
+};
 
 function renderBiz(){
   const b=BUSINESSES.find(x=>x.id===currentBiz);
   const bs=state.biz[currentBiz];
-  const el=document.getElementById("screen-biz");
-
   const tabs=[
     {id:"dashboard",label:"📊 Painel"},
     {id:"funcionarios",label:"👥 Funcionários"},
@@ -304,77 +402,55 @@ function renderBiz(){
     {id:"estoque",label:"📦 Estoque"},
     {id:"fornecedores",label:"🤝 Fornecedores"},
   ];
-
   let html=`
   <div class="biz-header">
     <button class="btn-back" onclick="goMap()">← Voltar</button>
     <div class="icon">${b.icon}</div>
-    <div>
-      <h2>${b.name}</h2>
-      <div class="sub">Dia ${bs.day} · Caixa: ${fmt(bs.cash)}</div>
-    </div>
+    <div><h2>${b.name}</h2><div class="sub">Dia ${bs.day} · Caixa: ${fmt(bs.cash)}</div></div>
     <button class="btn-advance" onclick="advanceDay()">Avançar dia ▶</button>
   </div>
-  <div class="tabs">
-    ${tabs.map(t=>`<button class="tab-btn${currentTab===t.id?" active":""}" onclick="switchTab('${t.id}')">${t.label}</button>`).join("")}
-  </div>
+  <div id="save-indicator" class="save-indicator"></div>
+  <div class="tabs">${tabs.map(t=>`<button class="tab-btn${currentTab===t.id?" active":""}" onclick="switchTab('${t.id}')">${t.label}</button>`).join("")}</div>
   <div class="panel">${renderTab(bs,b)}</div>`;
-
-  el.innerHTML=html;
+  document.getElementById("screen-biz").innerHTML=html;
 }
 
 function renderTab(bs,b){
-  if(currentTab==="dashboard") return renderDashboard(bs);
-  if(currentTab==="funcionarios") return renderFuncionarios(bs,b);
-  if(currentTab==="produtos") return renderProdutos(bs,b);
-  if(currentTab==="estoque") return renderEstoque(bs,b);
-  if(currentTab==="fornecedores") return renderFornecedores(bs,b);
+  if(currentTab==="dashboard")return renderDashboard(bs);
+  if(currentTab==="funcionarios")return renderFuncionarios(bs,b);
+  if(currentTab==="produtos")return renderProdutos(bs,b);
+  if(currentTab==="estoque")return renderEstoque(bs,b);
+  if(currentTab==="fornecedores")return renderFornecedores(bs,b);
   return "";
 }
 
 function renderDashboard(bs){
   const maxRev=Math.max(...bs.history.map(h=>h.rev),1);
   const bars=bs.history.length
-    ? bs.history.map(h=>`<div class="bar" style="height:${Math.max(3,(h.rev/maxRev)*56)}px" title="${fmt(h.rev)}"></div>`).join("")
-    : `<div style="font-size:12px;color:#555">Avance o dia para ver o gráfico</div>`;
-
+    ?bs.history.map(h=>`<div class="bar" style="height:${Math.max(3,(h.rev/maxRev)*56)}px" title="${fmt(h.rev)}"></div>`).join("")
+    :`<div style="font-size:12px;color:#555">Avance o dia para ver o gráfico</div>`;
   const evHtml=bs.events.length
-    ? `<div class="events">${bs.events.slice(0,5).map(e=>`<div class="ev"><span class="day">Dia ${e.day}</span>${e.msg}</div>`).join("")}</div>`
-    : `<div class="empty">Nenhum evento ainda.</div>`;
-
-  return `
+    ?`<div class="events">${bs.events.slice(0,5).map(e=>`<div class="ev"><span class="day">Dia ${e.day}</span>${e.msg}</div>`).join("")}</div>`
+    :`<div class="empty">Nenhum evento ainda.</div>`;
+  return`
   <div class="metrics">
     <div class="metric"><div class="lbl">Caixa</div><div class="val">${fmt(bs.cash)}</div></div>
     <div class="metric"><div class="lbl">Faturamento total</div><div class="val">${fmt(bs.revenue)}</div></div>
     <div class="metric"><div class="lbl">Reputação</div><div class="val">${bs.reputation}/100</div></div>
     <div class="metric"><div class="lbl">Estoque</div><div class="val">${bs.stock}%</div></div>
   </div>
-  <div class="chart-wrap">
-    <div class="chart-label">Receita diária (últimos dias)</div>
-    <div class="bars">${bars}</div>
-  </div>
-  <div class="chart-label" style="margin-bottom:8px">Eventos recentes</div>
-  ${evHtml}`;
+  <div class="chart-wrap"><div class="chart-label">Receita diária</div><div class="bars">${bars}</div></div>
+  <div class="chart-label" style="margin-bottom:8px">Eventos recentes</div>${evHtml}`;
 }
 
 function renderFuncionarios(bs,b){
   const payroll=bs.employees.reduce((s,e)=>s+e.salary,0);
-  const roleOptions=ROLES[b.id].map(r=>`<option value="${r}">${r} — ${fmt(SALARIES[r]||1412)}/mês</option>`).join("");
-  const empRows=bs.employees.length
-    ? bs.employees.map(e=>`
-      <div class="emp-row">
-        <div><div class="name">${e.role}</div><div class="info">${fmt(e.salary)}/mês · satisfação ${e.happiness}%</div></div>
-        <button class="btn-fire" onclick="fireEmp(${e.id})">Demitir</button>
-      </div>`).join("")
-    : `<div class="empty">Nenhum funcionário ainda.</div>`;
-
-  return `
-  <div class="payroll">Folha mensal: <span>${fmt(payroll)}</span> · ${bs.employees.length} funcionário(s)</div>
-  <div class="emp-hire">
-    <select id="hire-role"><option value="">Selecionar cargo...</option>${roleOptions}</select>
-    <button onclick="hireEmp()">Contratar</button>
-  </div>
-  ${empRows}`;
+  const opts=ROLES[b.id].map(r=>`<option value="${r}">${r} — ${fmt(SALARIES[r]||1412)}/mês</option>`).join("");
+  const rows=bs.employees.length
+    ?bs.employees.map(e=>`<div class="emp-row"><div><div class="name">${e.role}</div><div class="info">${fmt(e.salary)}/mês · satisfação ${e.happiness}%</div></div><button class="btn-fire" onclick="fireEmp(${e.id})">Demitir</button></div>`).join("")
+    :`<div class="empty">Nenhum funcionário ainda.</div>`;
+  return`<div class="payroll">Folha mensal: <span>${fmt(payroll)}</span> · ${bs.employees.length} funcionário(s)</div>
+  <div class="emp-hire"><select id="hire-role"><option value="">Selecionar cargo...</option>${opts}</select><button onclick="hireEmp()">Contratar</button></div>${rows}`;
 }
 
 function renderProdutos(bs,b){
@@ -383,14 +459,7 @@ function renderProdutos(bs,b){
     const cost=(p.base*p.cr*sup.pm).toFixed(2);
     const price=bs.prices[p.id];
     const margin=price>0?((price-cost)/price*100).toFixed(0):0;
-    return `
-    <div class="prod-row">
-      <div class="info">
-        <div class="pname">${p.name}</div>
-        <div class="pmeta">Custo: ${fmt(cost)} · Margem: ${margin}%</div>
-      </div>
-      <input type="number" value="${price}" step="0.5" min="0" onchange="setPrice('${p.id}',this.value)">
-    </div>`;
+    return`<div class="prod-row"><div class="info"><div class="pname">${p.name}</div><div class="pmeta">Custo: ${fmt(cost)} · Margem: ${margin}%</div></div><input type="number" value="${price}" step="0.5" min="0" onchange="setPrice('${p.id}',this.value)"></div>`;
   }).join("");
 }
 
@@ -399,51 +468,36 @@ function renderEstoque(bs,b){
   const cost=(500*sup.pm).toFixed(0);
   const color=bs.stock>40?"#4ade80":"#f87171";
   const statusMsg=bs.stock<=20?"⚠️ Crítico! Reabasteça agora.":bs.stock<=50?"Atenção, repor em breve.":"Nível saudável.";
-  return `
-  <div style="background:#1a1a1a;border-radius:10px;padding:14px 16px;margin-bottom:14px">
+  return`<div style="background:#1a1a1a;border-radius:10px;padding:14px 16px;margin-bottom:14px">
     <div class="chart-label" style="margin-bottom:8px">Nível de estoque</div>
     <div class="stock-bar-wrap"><div class="stock-bar" style="width:${bs.stock}%;background:${color}"></div></div>
     <div class="stock-status" style="color:${color}">${bs.stock}% — ${statusMsg}</div>
   </div>
   <button class="btn-restock" onclick="restock()">Pedir reposição (+30%) — custo: ${fmt(cost)}</button>
   <div class="chart-label" style="margin-bottom:8px">Produtos monitorados</div>
-  ${PRODUCTS[b.id].map(p=>`
-    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1f1f1f;font-size:13px">
-      <span>${p.name}</span><span style="color:#666">Preço: ${fmt(bs.prices[p.id])}</span>
-    </div>`).join("")}`;
+  ${PRODUCTS[b.id].map(p=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1f1f1f;font-size:13px"><span>${p.name}</span><span style="color:#666">Preço: ${fmt(bs.prices[p.id])}</span></div>`).join("")}`;
 }
 
 function renderFornecedores(bs,b){
   return SUPPLIERS[b.id].map(s=>`
     <div class="sup-card${bs.supplier===s.id?" active":""}" onclick="setSupplier('${s.id}')">
-      <div class="sup-top">
-        <div class="sup-name">${s.name}</div>
-        ${bs.supplier===s.id?`<span class="sup-badge">ativo</span>`:""}
-      </div>
-      <div class="sup-meta">
-        <span>Qualidade: ${stars(s.quality)}</span>
-        <span>Custo: ${Math.round(s.pm*100)}%</span>
-        <span>Entrega: ${s.days}d</span>
-        <span>Pedido mín: ${fmt(s.min)}</span>
-      </div>
+      <div class="sup-top"><div class="sup-name">${s.name}</div>${bs.supplier===s.id?`<span class="sup-badge">ativo</span>`:""}</div>
+      <div class="sup-meta"><span>Qualidade: ${stars(s.quality)}</span><span>Custo: ${Math.round(s.pm*100)}%</span><span>Entrega: ${s.days}d</span><span>Pedido mín: ${fmt(s.min)}</span></div>
     </div>`).join("");
 }
 
-function goMap(){showScreen("map");renderMap();}
-function switchTab(t){currentTab=t;renderBiz();}
+window.goMap=function(){showScreen("map");renderMap();};
+window.switchTab=function(t){currentTab=t;renderBiz();};
 
-function advanceDay(){
+window.advanceDay=function(){
   const bs=state.biz[currentBiz];
-  const b=BUSINESSES.find(x=>x.id===currentBiz);
   const sup=SUPPLIERS[currentBiz].find(s=>s.id===bs.supplier);
-
   const staffBonus=1+bs.employees.length*0.12;
   const repBonus=bs.reputation/100;
   const stockFactor=bs.stock>20?1:0.4;
   const baseRev=PRODUCTS[currentBiz].reduce((sum,p)=>sum+bs.prices[p.id]*(10+Math.random()*15),0);
   const dayRev=Math.round(baseRev*staffBonus*repBonus*stockFactor*(sup.quality/4));
   const dayCost=Math.round(bs.employees.reduce((s,e)=>s+e.salary/30,0));
-
   bs.cash+=dayRev-dayCost;
   bs.revenue+=dayRev;
   bs.expenses+=dayCost;
@@ -451,7 +505,6 @@ function advanceDay(){
   bs.history.push({day:bs.day,rev:dayRev,exp:dayCost});
   if(bs.history.length>30)bs.history.shift();
   bs.day++;
-
   if(Math.random()<0.25){
     const ev=EVENTS[Math.floor(Math.random()*EVENTS.length)];
     ev.fx(bs);
@@ -459,11 +512,11 @@ function advanceDay(){
     if(bs.events.length>10)bs.events.pop();
     notify("📢 "+ev.msg,"#fbbf24","#2a2010","#504020");
   }
-
+  scheduleSave();
   renderBiz();
-}
+};
 
-function hireEmp(){
+window.hireEmp=function(){
   const role=document.getElementById("hire-role").value;
   if(!role){notify("Selecione um cargo!","#f87171","#2a1515","#4a1f1f");return;}
   const bs=state.biz[currentBiz];
@@ -472,22 +525,24 @@ function hireEmp(){
   bs.employees.push({id:Date.now(),role,salary,happiness:80});
   bs.cash-=salary*0.1;
   notify(`✅ ${role} contratado!`);
+  scheduleSave();
   renderBiz();
-}
+};
 
-function fireEmp(id){
-  const bs=state.biz[currentBiz];
-  bs.employees=bs.employees.filter(e=>e.id!==id);
+window.fireEmp=function(id){
+  state.biz[currentBiz].employees=state.biz[currentBiz].employees.filter(e=>e.id!==id);
   notify("Funcionário demitido.","#f87171","#2a1515","#4a1f1f");
+  scheduleSave();
   renderBiz();
-}
+};
 
-function setPrice(pid,val){
+window.setPrice=function(pid,val){
   state.biz[currentBiz].prices[pid]=parseFloat(val)||0;
+  scheduleSave();
   renderBiz();
-}
+};
 
-function restock(){
+window.restock=function(){
   const bs=state.biz[currentBiz];
   const sup=SUPPLIERS[currentBiz].find(s=>s.id===bs.supplier);
   const cost=Math.round(500*sup.pm);
@@ -495,16 +550,16 @@ function restock(){
   bs.cash-=cost;
   bs.stock=Math.min(100,bs.stock+30);
   notify("📦 Estoque reposto +30%!");
+  scheduleSave();
   renderBiz();
-}
+};
 
-function setSupplier(sid){
+window.setSupplier=function(sid){
   state.biz[currentBiz].supplier=sid;
   notify("🤝 Fornecedor alterado!");
+  scheduleSave();
   renderBiz();
-}
-
-renderMap();
+};
 </script>
 </body>
 </html>
